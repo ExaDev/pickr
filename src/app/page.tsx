@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ExamplePacks } from '../components/cards/ExamplePacks';
 import { PackGrid } from '../components/cards/PackGrid';
+import { TemplateBrowser } from '../components/templates/TemplateBrowser';
 import { Button } from '../components/ui/Button';
 import { useCardsStore } from '../store';
 
@@ -34,9 +35,32 @@ export default function Home() {
 						Create rankings through intuitive swipe-based comparisons. Compare anything from movies
 						to life decisions with simple, binary choices.
 					</p>
-					<Button onClick={handleCreatePack} size="lg">
-						Create New Pack
-					</Button>
+					<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+						<Button onClick={handleCreatePack} size="lg">
+							Create New Pack
+						</Button>
+						<Button 
+							variant="outline" 
+							size="lg"
+							onClick={() => router.push('/templates')}
+						>
+							Browse Templates
+						</Button>
+						<Button 
+							variant="outline" 
+							size="lg"
+							onClick={() => router.push('/compare')}
+						>
+							Compare Rankings
+						</Button>
+						<Button 
+							variant="ghost" 
+							size="lg"
+							onClick={() => router.push('/results/shared')}
+						>
+							View Shared Results
+						</Button>
+					</div>
 				</header>
 
 				{/* Features grid for new users */}
@@ -111,10 +135,23 @@ export default function Home() {
 					</div>
 				)}
 
-				{/* Example packs for new users */}
+				{/* Template browser for new users */}
 				{packs.length === 0 && (
 					<section className="mb-12">
-						<ExamplePacks />
+						<h2 className="text-2xl font-semibold text-center mb-8">Get Started with Templates</h2>
+						<TemplateBrowser 
+							showSearch={false}
+							showCategories={true}
+							maxItems={12}
+						/>
+						<div className="text-center mt-8">
+							<Button 
+								variant="outline"
+								onClick={() => router.push('/templates')}
+							>
+								View All Templates
+							</Button>
+						</div>
 					</section>
 				)}
 

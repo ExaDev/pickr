@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import { PickrCard } from '../../../components/cards/PickrCard';
+import { RankingChart } from '../../../components/results/RankingChart';
 import { Button } from '../../../components/ui/Button';
 import {
 	Card,
@@ -202,14 +203,24 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 					</Card>
 				</motion.div>
 
-				{/* Rankings */}
+				{/* Chart Visualization */}
 				<motion.div
 					className="mb-12"
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={{ duration: 0.5, delay: 0.4 }}
 				>
-					<h2 className="text-2xl font-semibold mb-6">Final Rankings</h2>
+					<RankingChart rankings={result.rankings} title="Results Visualization" />
+				</motion.div>
+
+				{/* Rankings */}
+				<motion.div
+					className="mb-12"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 0.5, delay: 0.6 }}
+				>
+					<h2 className="text-2xl font-semibold mb-6">Detailed Rankings</h2>
 					<div className="space-y-4">
 						{result.rankings.map((rankedCard, index) => (
 							<motion.div
@@ -264,12 +275,19 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 					className="flex flex-col sm:flex-row items-center justify-center gap-4"
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.6 }}
+					transition={{ duration: 0.5, delay: 0.8 }}
 				>
 					<Button onClick={handleShare} size="lg" className="min-w-[160px]">
 						Share Results
 					</Button>
-					<Button variant="outline" onClick={handleNewRanking} size="lg">
+					<Button 
+						variant="outline" 
+						onClick={() => router.push('/compare')} 
+						size="lg"
+					>
+						Compare with Others
+					</Button>
+					<Button variant="ghost" onClick={handleNewRanking} size="lg">
 						Create New Ranking
 					</Button>
 				</motion.div>
