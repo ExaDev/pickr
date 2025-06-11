@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { PickrCard } from '../../../components/cards/PickrCard';
 import { RankingChart } from '../../../components/results/RankingChart';
 import { Button } from '../../../components/ui/Button';
@@ -18,7 +18,7 @@ import { decodeFromPaco, validatePacoCode } from '../../../lib/paco/encoding';
 import { formatDate } from '../../../lib/utils';
 import type { PacoData } from '../../../types';
 
-export default function SharedResultsPage() {
+function SharedResultsPageContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -304,5 +304,22 @@ export default function SharedResultsPage() {
 				</motion.div>
 			</div>
 		</div>
+	);
+}
+
+export default function SharedResultsPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className="min-h-screen bg-background flex items-center justify-center">
+					<div className="text-center">
+						<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+						<p className="text-muted-foreground">Loading page...</p>
+					</div>
+				</div>
+			}
+		>
+			<SharedResultsPageContent />
+		</Suspense>
 	);
 }

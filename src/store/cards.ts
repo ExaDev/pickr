@@ -2,10 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Card, CardInput, Pack, PackInput } from '../types';
 
-interface CardsState {
+interface CardsStateData {
 	packs: Pack[];
 	currentPack: Pack | null;
+}
 
+interface CardsState extends CardsStateData {
 	// Pack management
 	addPack: (pack: PackInput) => Pack;
 	updatePack: (id: string, updates: Partial<Pack>) => void;
@@ -47,8 +49,8 @@ interface PersistedState {
 }
 
 // Helper function to revive Date objects from storage
-const reviveDates = (state: PersistedState): CardsState => {
-	if (!state) return { packs: [], currentPack: null } as CardsState;
+const reviveDates = (state: PersistedState): CardsStateData => {
+	if (!state) return { packs: [], currentPack: null };
 
 	// Revive dates in packs
 	const packs = state.packs
@@ -76,7 +78,7 @@ const reviveDates = (state: PersistedState): CardsState => {
 			}
 		: null;
 
-	return { packs, currentPack } as CardsState;
+	return { packs, currentPack };
 };
 
 export const useCardsStore = create<CardsState>()(
@@ -221,21 +223,12 @@ export const useCardsStore = create<CardsState>()(
 		{
 			name: 'pickr-cards-storage',
 			version: 1,
-			storage: {
-				getItem: name => {
-					const str = localStorage.getItem(name);
-					if (!str) return null;
-					try {
-						const parsed = JSON.parse(str);
-						return reviveDates(parsed);
-					} catch {
-						return null;
-					}
-				},
-				setItem: (name, value) => {
-					localStorage.setItem(name, JSON.stringify(value));
-				},
-				removeItem: name => localStorage.removeItem(name),
+			onRehydrateStorage: state => {
+				if (!state) return;
+				// Apply date revival to the rehydrated state
+				// We know the state from localStorage has string dates, so we can safely cast
+				const revivedData = reviveDates(state as unknown as PersistedState);
+				Object.assign(state, revivedData);
 			},
 		}
 	)
