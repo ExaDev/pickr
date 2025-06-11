@@ -52,7 +52,8 @@ export class PWAManager {
 		}
 
 		const isStandalone = window.matchMedia?.('(display-mode: standalone)').matches;
-		const isIOSStandalone = (window.navigator as any).standalone === true;
+		const isIOSStandalone =
+			(window.navigator as Navigator & { standalone?: boolean }).standalone === true;
 		this.isInstalled = isStandalone || isIOSStandalone;
 		return this.isInstalled;
 	}
@@ -163,18 +164,22 @@ export class PWAManager {
 	 */
 	public static getNetworkStatus(): {
 		online: boolean;
-		connection?: any;
+		connection?: unknown;
 	} {
 		if (typeof window === 'undefined') {
 			return { online: true };
 		}
 
+		type NavigatorWithConnection = Navigator & {
+			connection?: unknown;
+			mozConnection?: unknown;
+			webkitConnection?: unknown;
+		};
+
+		const nav = navigator as NavigatorWithConnection;
 		return {
 			online: navigator.onLine,
-			connection:
-				(navigator as any).connection ||
-				(navigator as any).mozConnection ||
-				(navigator as any).webkitConnection,
+			connection: nav.connection || nav.mozConnection || nav.webkitConnection,
 		};
 	}
 }

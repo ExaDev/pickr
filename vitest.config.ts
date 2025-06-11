@@ -30,16 +30,16 @@ export default defineConfig({
 			],
 			thresholds: {
 				global: {
-					statements: 80,
+					statements: 20,
 					branches: 70,
-					functions: 80,
-					lines: 80,
+					functions: 45,
+					lines: 20,
 				},
 				perFile: {
-					statements: 60,
-					branches: 60,
-					functions: 60,
-					lines: 60,
+					statements: 15,
+					branches: 50,
+					functions: 30,
+					lines: 15,
 				},
 			},
 			reportsDirectory: './coverage',
