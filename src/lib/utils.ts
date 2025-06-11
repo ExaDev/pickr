@@ -31,9 +31,17 @@ export function formatDate(date: Date): string {
 /**
  * Format a relative time (e.g., "2 minutes ago")
  */
-export function formatRelativeTime(date: Date): string {
+export function formatRelativeTime(date: Date | string | number): string {
+	// Ensure we have a Date object
+	const dateObj = date instanceof Date ? date : new Date(date);
+
+	// Check if the date is valid
+	if (Number.isNaN(dateObj.getTime())) {
+		return 'Unknown time';
+	}
+
 	const now = new Date();
-	const diffMs = now.getTime() - date.getTime();
+	const diffMs = now.getTime() - dateObj.getTime();
 	const diffMins = Math.floor(diffMs / 60000);
 	const diffHours = Math.floor(diffMins / 60);
 	const diffDays = Math.floor(diffHours / 24);
@@ -42,8 +50,8 @@ export function formatRelativeTime(date: Date): string {
 	if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
 	if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
 	if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-	
-	return formatDate(date);
+
+	return formatDate(dateObj);
 }
 
 /**
@@ -90,7 +98,9 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
 		if (!inThrottle) {
 			func(...args);
 			inThrottle = true;
-			setTimeout(() => (inThrottle = false), limit);
+			setTimeout(() => {
+				inThrottle = false;
+			}, limit);
 		}
 	};
 }

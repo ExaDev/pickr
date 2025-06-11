@@ -1,28 +1,83 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Pack, Card, PackInput, CardInput } from '../types';
+import type { Card, CardInput, Pack, PackInput } from '../types';
 
 interface CardsState {
 	packs: Pack[];
 	currentPack: Pack | null;
-	
+
 	// Pack management
 	addPack: (pack: PackInput) => Pack;
 	updatePack: (id: string, updates: Partial<Pack>) => void;
 	deletePack: (id: string) => void;
 	setCurrentPack: (pack: Pack | null) => void;
 	getPackById: (id: string) => Pack | undefined;
-	
+
 	// Card management
 	addCardToPack: (packId: string, card: CardInput) => Card | null;
 	updateCard: (packId: string, cardId: string, updates: Partial<Card>) => void;
 	removeCardFromPack: (packId: string, cardId: string) => void;
-	
+
 	// Utility functions
 	clearAllData: () => void;
 }
 
 const generateId = () => crypto.randomUUID();
+
+// Types for persisted data with serialized dates
+interface PersistedCard {
+	id: string;
+	content: string;
+	imageUrl?: string;
+	createdAt: string; // Date as string
+}
+
+interface PersistedPack {
+	id: string;
+	name: string;
+	description?: string;
+	cards: PersistedCard[];
+	createdAt: string; // Date as string
+	updatedAt: string; // Date as string
+}
+
+interface PersistedState {
+	packs?: PersistedPack[];
+	currentPack?: PersistedPack | null;
+}
+
+// Helper function to revive Date objects from storage
+const reviveDates = (state: PersistedState): CardsState => {
+	if (!state) return { packs: [], currentPack: null } as CardsState;
+
+	// Revive dates in packs
+	const packs = state.packs
+		? state.packs.map((pack: PersistedPack) => ({
+				...pack,
+				createdAt: new Date(pack.createdAt),
+				updatedAt: new Date(pack.updatedAt),
+				cards: pack.cards.map((card: PersistedCard) => ({
+					...card,
+					createdAt: new Date(card.createdAt),
+				})),
+			}))
+		: [];
+
+	// Revive dates in currentPack
+	const currentPack = state.currentPack
+		? {
+				...state.currentPack,
+				createdAt: new Date(state.currentPack.createdAt),
+				updatedAt: new Date(state.currentPack.updatedAt),
+				cards: state.currentPack.cards.map((card: PersistedCard) => ({
+					...card,
+					createdAt: new Date(card.createdAt),
+				})),
+			}
+		: null;
+
+	return { packs, currentPack } as CardsState;
+};
 
 export const useCardsStore = create<CardsState>()(
 	persist(
@@ -39,7 +94,7 @@ export const useCardsStore = create<CardsState>()(
 					updatedAt: new Date(),
 				};
 
-				set((state) => ({
+				set(state => ({
 					packs: [...state.packs, newPack],
 				}));
 
@@ -47,11 +102,9 @@ export const useCardsStore = create<CardsState>()(
 			},
 
 			updatePack: (id: string, updates: Partial<Pack>) => {
-				set((state) => ({
-					packs: state.packs.map((pack) =>
-						pack.id === id
-							? { ...pack, ...updates, updatedAt: new Date() }
-							: pack
+				set(state => ({
+					packs: state.packs.map(pack =>
+						pack.id === id ? { ...pack, ...updates, updatedAt: new Date() } : pack
 					),
 					currentPack:
 						state.currentPack?.id === id
@@ -61,8 +114,8 @@ export const useCardsStore = create<CardsState>()(
 			},
 
 			deletePack: (id: string) => {
-				set((state) => ({
-					packs: state.packs.filter((pack) => pack.id !== id),
+				set(state => ({
+					packs: state.packs.filter(pack => pack.id !== id),
 					currentPack: state.currentPack?.id === id ? null : state.currentPack,
 				}));
 			},
@@ -72,7 +125,7 @@ export const useCardsStore = create<CardsState>()(
 			},
 
 			getPackById: (id: string) => {
-				return get().packs.find((pack) => pack.id === id);
+				return get().packs.find(pack => pack.id === id);
 			},
 
 			addCardToPack: (packId: string, cardInput: CardInput) => {
@@ -84,8 +137,8 @@ export const useCardsStore = create<CardsState>()(
 
 				let addedCard: Card | null = null;
 
-				set((state) => {
-					const updatedPacks = state.packs.map((pack) => {
+				set(state => {
+					const updatedPacks = state.packs.map(pack => {
 						if (pack.id === packId) {
 							const updatedPack = {
 								...pack,
@@ -102,7 +155,7 @@ export const useCardsStore = create<CardsState>()(
 						packs: updatedPacks,
 						currentPack:
 							state.currentPack?.id === packId
-								? updatedPacks.find((p) => p.id === packId) || state.currentPack
+								? updatedPacks.find(p => p.id === packId) || state.currentPack
 								: state.currentPack,
 					};
 				});
@@ -111,12 +164,12 @@ export const useCardsStore = create<CardsState>()(
 			},
 
 			updateCard: (packId: string, cardId: string, updates: Partial<Card>) => {
-				set((state) => {
-					const updatedPacks = state.packs.map((pack) => {
+				set(state => {
+					const updatedPacks = state.packs.map(pack => {
 						if (pack.id === packId) {
 							return {
 								...pack,
-								cards: pack.cards.map((card) =>
+								cards: pack.cards.map(card =>
 									card.id === cardId ? { ...card, ...updates } : card
 								),
 								updatedAt: new Date(),
@@ -129,19 +182,19 @@ export const useCardsStore = create<CardsState>()(
 						packs: updatedPacks,
 						currentPack:
 							state.currentPack?.id === packId
-								? updatedPacks.find((p) => p.id === packId) || state.currentPack
+								? updatedPacks.find(p => p.id === packId) || state.currentPack
 								: state.currentPack,
 					};
 				});
 			},
 
 			removeCardFromPack: (packId: string, cardId: string) => {
-				set((state) => {
-					const updatedPacks = state.packs.map((pack) => {
+				set(state => {
+					const updatedPacks = state.packs.map(pack => {
 						if (pack.id === packId) {
 							return {
 								...pack,
-								cards: pack.cards.filter((card) => card.id !== cardId),
+								cards: pack.cards.filter(card => card.id !== cardId),
 								updatedAt: new Date(),
 							};
 						}
@@ -152,7 +205,7 @@ export const useCardsStore = create<CardsState>()(
 						packs: updatedPacks,
 						currentPack:
 							state.currentPack?.id === packId
-								? updatedPacks.find((p) => p.id === packId) || state.currentPack
+								? updatedPacks.find(p => p.id === packId) || state.currentPack
 								: state.currentPack,
 					};
 				});
@@ -168,6 +221,22 @@ export const useCardsStore = create<CardsState>()(
 		{
 			name: 'pickr-cards-storage',
 			version: 1,
+			storage: {
+				getItem: name => {
+					const str = localStorage.getItem(name);
+					if (!str) return null;
+					try {
+						const parsed = JSON.parse(str);
+						return reviveDates(parsed);
+					} catch {
+						return null;
+					}
+				},
+				setItem: (name, value) => {
+					localStorage.setItem(name, JSON.stringify(value));
+				},
+				removeItem: name => localStorage.removeItem(name),
+			},
 		}
 	)
 );
