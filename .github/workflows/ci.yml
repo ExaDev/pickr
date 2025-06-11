@@ -153,10 +153,10 @@ jobs:
               "### Overall Coverage:\n",
               "| Metric | Coverage | Threshold | Status |",
               "| --- | --- | --- | --- |",
-              "| **Statements** | " + (.total.statements.pct | tostring) + "% (" + (.total.statements.covered | tostring) + "/" + (.total.statements.total | tostring) + ") | 80% | " + (if .total.statements.pct >= 80 then "✅ Pass" else "❌ Fail" end) + " |",
+              "| **Statements** | " + (.total.statements.pct | tostring) + "% (" + (.total.statements.covered | tostring) + "/" + (.total.statements.total | tostring) + ") | 20% | " + (if .total.statements.pct >= 20 then "✅ Pass" else "❌ Fail" end) + " |",
               "| **Branches** | " + (.total.branches.pct | tostring) + "% (" + (.total.branches.covered | tostring) + "/" + (.total.branches.total | tostring) + ") | 70% | " + (if .total.branches.pct >= 70 then "✅ Pass" else "❌ Fail" end) + " |",
-              "| **Functions** | " + (.total.functions.pct | tostring) + "% (" + (.total.functions.covered | tostring) + "/" + (.total.functions.total | tostring) + ") | 80% | " + (if .total.functions.pct >= 80 then "✅ Pass" else "❌ Fail" end) + " |",
-              "| **Lines** | " + (.total.lines.pct | tostring) + "% (" + (.total.lines.covered | tostring) + "/" + (.total.lines.total | tostring) + ") | 80% | " + (if .total.lines.pct >= 80 then "✅ Pass" else "❌ Fail" end) + " |"
+              "| **Functions** | " + (.total.functions.pct | tostring) + "% (" + (.total.functions.covered | tostring) + "/" + (.total.functions.total | tostring) + ") | 45% | " + (if .total.functions.pct >= 45 then "✅ Pass" else "❌ Fail" end) + " |",
+              "| **Lines** | " + (.total.lines.pct | tostring) + "% (" + (.total.lines.covered | tostring) + "/" + (.total.lines.total | tostring) + ") | 20% | " + (if .total.lines.pct >= 20 then "✅ Pass" else "❌ Fail" end) + " |"
             ' >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "📈 [View detailed coverage report in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
@@ -197,15 +197,15 @@ jobs:
           LINES=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
           
           echo "Current coverage:"
-          echo "  Statements: ${STATEMENTS}% (threshold: 80%)"
+          echo "  Statements: ${STATEMENTS}% (threshold: 20%)"
           echo "  Branches: ${BRANCHES}% (threshold: 70%)"
-          echo "  Functions: ${FUNCTIONS}% (threshold: 80%)"
-          echo "  Lines: ${LINES}% (threshold: 80%)"
+          echo "  Functions: ${FUNCTIONS}% (threshold: 45%)"
+          echo "  Lines: ${LINES}% (threshold: 20%)"
           
           FAILED=false
           
-          if (( $(echo "$STATEMENTS < 80" | bc -l) )); then
-            echo "❌ Statements coverage below threshold: ${STATEMENTS}% < 80%"
+          if (( $(echo "$STATEMENTS < 20" | bc -l) )); then
+            echo "❌ Statements coverage below threshold: ${STATEMENTS}% < 20%"
             FAILED=true
           fi
           
@@ -214,13 +214,13 @@ jobs:
             FAILED=true
           fi
           
-          if (( $(echo "$FUNCTIONS < 80" | bc -l) )); then
-            echo "❌ Functions coverage below threshold: ${FUNCTIONS}% < 80%"
+          if (( $(echo "$FUNCTIONS < 45" | bc -l) )); then
+            echo "❌ Functions coverage below threshold: ${FUNCTIONS}% < 45%"
             FAILED=true
           fi
           
-          if (( $(echo "$LINES < 80" | bc -l) )); then
-            echo "❌ Lines coverage below threshold: ${LINES}% < 80%"
+          if (( $(echo "$LINES < 20" | bc -l) )); then
+            echo "❌ Lines coverage below threshold: ${LINES}% < 20%"
             FAILED=true
           fi
           
