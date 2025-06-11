@@ -1,8 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 test.describe('Multi-Result Comparison', () => {
-	// Helper to create and complete multiple rankings for comparison
-	async function createMultipleRankings(page: any, count = 2) {
+	// Helper to create and complete multiple rankings for comparison (currently unused)
+	/*
+	async function createMultipleRankings(page: Page, count = 2) {
 		const rankings = [];
 
 		for (let i = 0; i < count; i++) {
@@ -63,6 +64,7 @@ test.describe('Multi-Result Comparison', () => {
 
 		return rankings;
 	}
+	*/
 
 	test('should display comparison page', async ({ page }) => {
 		await page.goto('/compare');
@@ -177,7 +179,7 @@ test.describe('Multi-Result Comparison', () => {
 		// In a real scenario, you'd use actual share URLs from completed rankings
 
 		// For now, test that the UI elements for consensus are present in the component
-		const consensusElements = page.locator('text=Consensus, text=consensus');
+		const _consensusElements = page.locator('text=Consensus, text=consensus');
 		// This might not be visible without valid data, so we just check the page loaded
 		await expect(page.getByRole('heading', { name: 'Compare Rankings' })).toBeVisible();
 	});

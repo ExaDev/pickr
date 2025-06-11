@@ -90,14 +90,9 @@
 		}
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx,json}": [
-			"biome format --write",
-			"biome check --write"
-		]
+		"*.{js,jsx,ts,tsx,json}": ["biome format --write", "biome check --write"]
 	},
 	"msw": {
-		"workerDirectory": [
-			"public"
-		]
+		"workerDirectory": ["public"]
 	}
 }

@@ -208,7 +208,7 @@ export default function ComparePage() {
 						</CardHeader>
 						<CardContent className="space-y-4">
 							{inputs.map((input, index) => (
-								<div key={index} className="flex gap-2">
+								<div key={`input-${index}-${input.slice(0, 10)}`} className="flex gap-2">
 									<Input
 										value={input}
 										onChange={e => updateInput(index, e.target.value)}
@@ -247,7 +247,7 @@ export default function ComparePage() {
 									{errors.map(
 										(error, index) =>
 											error && (
-												<p key={index} className="text-sm text-destructive">
+												<p key={`error-${index}-${error.slice(0, 20)}`} className="text-sm text-destructive">
 													Ranking {index + 1}: {error}
 												</p>
 											)
@@ -334,7 +334,7 @@ export default function ComparePage() {
 							transition={{ duration: 0.5, delay: 0.6 }}
 						>
 							{comparisons.map((comparison, index) => (
-								<Card key={index}>
+								<Card key={`comparison-${index}-${comparison.rankings.length}`}>
 									<CardHeader>
 										<div className="flex items-center gap-3">
 											<div

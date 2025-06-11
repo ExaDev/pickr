@@ -14,17 +14,17 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 			// Find matching shortcut
 			const shortcut = shortcuts.find(s => {
 				if (s.disabled) return false;
-				
+
 				// Check if key matches
 				if (s.key.toLowerCase() !== event.key.toLowerCase()) return false;
-				
+
 				// Check modifiers
 				const modifiers = s.modifiers || [];
 				const ctrlRequired = modifiers.includes('ctrl');
 				const altRequired = modifiers.includes('alt');
 				const shiftRequired = modifiers.includes('shift');
 				const metaRequired = modifiers.includes('meta');
-				
+
 				return (
 					event.ctrlKey === ctrlRequired &&
 					event.altKey === altRequired &&
@@ -32,13 +32,13 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 					event.metaKey === metaRequired
 				);
 			});
-			
+
 			if (shortcut) {
 				event.preventDefault();
 				shortcut.handler(event);
 			}
 		};
-		
+
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
 	}, [shortcuts]);
@@ -56,7 +56,7 @@ export function useGlobalKeyboardShortcuts() {
 					searchInput.focus();
 				}
 			},
-			description: 'Focus search'
+			description: 'Focus search',
 		},
 		{
 			key: '?',
@@ -65,7 +65,7 @@ export function useGlobalKeyboardShortcuts() {
 				// Show keyboard shortcuts modal (to be implemented)
 				console.log('Show keyboard shortcuts help');
 			},
-			description: 'Show keyboard shortcuts help'
+			description: 'Show keyboard shortcuts help',
 		},
 		{
 			key: 'Escape',
@@ -76,9 +76,9 @@ export function useGlobalKeyboardShortcuts() {
 					activeElement.blur();
 				}
 			},
-			description: 'Cancel/close current action'
-		}
+			description: 'Cancel/close current action',
+		},
 	];
-	
+
 	useKeyboardShortcuts(shortcuts);
 }

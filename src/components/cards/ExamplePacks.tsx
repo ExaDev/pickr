@@ -79,8 +79,8 @@ export function ExamplePacks() {
 							<div className="space-y-1">
 								<p className="text-xs text-muted-foreground">Items ({examplePack.cards.length}):</p>
 								<div className="text-sm space-y-1">
-									{examplePack.cards.slice(0, 3).map((card, index) => (
-										<div key={index} className="truncate text-muted-foreground">
+									{examplePack.cards.slice(0, 3).map((card) => (
+										<div key={card} className="truncate text-muted-foreground">
 											• {card}
 										</div>
 									))}

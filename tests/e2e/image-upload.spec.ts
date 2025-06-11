@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
 import path from 'path';
+import { expect, test } from '@playwright/test';
 
 test.describe('Image Upload', () => {
 	test.beforeEach(async ({ page }) => {
@@ -14,17 +14,17 @@ test.describe('Image Upload', () => {
 	test('should upload and preview image', async ({ page }) => {
 		// Create a simple test image file
 		const testImagePath = path.join(__dirname, '..', 'fixtures', 'test-image.png');
-		
+
 		// Fill required fields first
 		await page.getByLabel('Pack Name').fill('Image Test Pack');
 		await page.getByPlaceholder('Enter item to rank...').fill('Test item with image');
-		
+
 		// Upload image (note: this requires a test image file)
 		const fileInput = page.locator('input[type="file"]');
-		if (await fileInput.count() > 0) {
+		if ((await fileInput.count()) > 0) {
 			// Only test if file input exists
 			await expect(page.getByRole('button', { name: /add image/i })).toBeVisible();
-			
+
 			// The actual file upload would require a test image file
 			// For now, just verify the interface is present
 		}
@@ -34,7 +34,7 @@ test.describe('Image Upload', () => {
 		// Fill basic form
 		await page.getByLabel('Pack Name').fill('Test Pack');
 		await page.getByPlaceholder('Enter item to rank...').fill('Test item');
-		
+
 		// Check that image button is not disabled initially
 		await expect(page.getByRole('button', { name: /add image/i })).toBeEnabled();
 	});
@@ -44,7 +44,7 @@ test.describe('Image Upload', () => {
 		// For now, just verify the interface structure
 		await page.getByLabel('Pack Name').fill('Test Pack');
 		await page.getByPlaceholder('Enter item to rank...').fill('Test item');
-		
+
 		// Verify form structure is correct
 		await expect(page.getByRole('button', { name: /add image/i })).toBeVisible();
 	});
@@ -53,7 +53,7 @@ test.describe('Image Upload', () => {
 		// Fill form
 		await page.getByLabel('Pack Name').fill('Test Pack');
 		await page.getByPlaceholder('Enter item to rank...').fill('Test item');
-		
+
 		// Verify error handling UI elements exist
 		// Actual error testing would require invalid file uploads
 		await expect(page.getByRole('button', { name: /add image/i })).toBeVisible();
@@ -63,7 +63,7 @@ test.describe('Image Upload', () => {
 		// Test character count display
 		const input = page.getByPlaceholder('Enter item to rank...');
 		await input.fill('Test content for character counting');
-		
+
 		// Should show character count
 		await expect(page.getByText(/characters/)).toBeVisible();
 	});
@@ -72,10 +72,10 @@ test.describe('Image Upload', () => {
 		// This would require testing with various file types
 		// For now, verify the interface is set up correctly
 		await page.getByLabel('Pack Name').fill('Test Pack');
-		
+
 		// Check file input accepts images
 		const fileInput = page.locator('input[type="file"]');
-		if (await fileInput.count() > 0) {
+		if ((await fileInput.count()) > 0) {
 			const acceptAttr = await fileInput.getAttribute('accept');
 			expect(acceptAttr).toBe('image/*');
 		}
@@ -92,15 +92,15 @@ test.describe('Image Upload', () => {
 		// Create pack with image support
 		await page.getByLabel('Pack Name').fill('Image Pack Test');
 		await page.getByLabel('Description').fill('Testing image functionality');
-		
+
 		// Add text card
 		await page.getByPlaceholder('Enter item to rank...').fill('Text only item');
 		await page.getByRole('button', { name: 'Add Card' }).click();
-		
+
 		// Add another card for minimum requirement
 		await page.getByPlaceholder('Enter item to rank...').fill('Another item');
 		await page.getByRole('button', { name: 'Add Card' }).click();
-		
+
 		// Should be able to start ranking
 		await expect(page.getByRole('button', { name: 'Start Ranking' })).toBeEnabled();
 	});
@@ -108,14 +108,14 @@ test.describe('Image Upload', () => {
 	test('should display image cards in preview', async ({ page }) => {
 		// Add pack details
 		await page.getByLabel('Pack Name').fill('Preview Test');
-		
+
 		// Add cards and check preview
 		await page.getByPlaceholder('Enter item to rank...').fill('Preview Item 1');
 		await page.getByRole('button', { name: 'Add Card' }).click();
-		
+
 		await page.getByPlaceholder('Enter item to rank...').fill('Preview Item 2');
 		await page.getByRole('button', { name: 'Add Card' }).click();
-		
+
 		// Check preview section
 		await expect(page.getByText('Preview (2 items)')).toBeVisible();
 		await expect(page.getByText('Preview Item 1')).toBeVisible();
@@ -126,10 +126,10 @@ test.describe('Image Upload', () => {
 		// This tests the image processing pipeline
 		// For now, verify the form structure supports images
 		await page.getByLabel('Pack Name').fill('Compression Test');
-		
+
 		// Check that image upload interface is available
 		await expect(page.getByRole('button', { name: /add image/i })).toBeVisible();
-		
+
 		// Verify file input exists for testing
 		const fileInputs = await page.locator('input[type="file"]').count();
 		expect(fileInputs).toBeGreaterThan(0);
@@ -147,7 +147,7 @@ test.describe('Image Display in Ranking', () => {
 		// This would test image display in the ranking interface
 		// Requires a pack with image cards to be created first
 		await page.goto('/');
-		
+
 		// For now, just verify we can reach the homepage
 		await expect(page.getByRole('heading', { name: 'pickr' })).toBeVisible();
 	});
