@@ -1,6 +1,6 @@
-# RankSwipe Documentation
+# pickr Documentation
 
-This directory contains comprehensive documentation for the RankSwipe project.
+This directory contains comprehensive documentation for the pickr project.
 
 ## Documents
 

@@ -1,8 +1,8 @@
-# RankSwipe Implementation Plan
+# pickr Implementation Plan
 
 ## Overview
 
-This document outlines the technical implementation plan for RankSwipe, a web application that enables users to create rankings through intuitive swipe-based pairwise comparisons.
+This document outlines the technical implementation plan for pickr, a web application that enables users to create rankings through intuitive swipe-based pairwise comparisons.
 
 ## Technical Architecture
 
@@ -230,7 +230,7 @@ export function ComparisonView({ comparison, onSelect }: ComparisonViewProps) {
 #### Storage Utilities (src/lib/storage/local.ts):
 ```typescript
 export class LocalStorage {
-  private prefix = 'rankswipe_';
+  private prefix = 'pickr_';
   
   savePacks(packs: Pack[]): void;
   loadPacks(): Pack[];
@@ -503,4 +503,4 @@ const nextConfig = {
 3. **Community Features**: Public pack sharing
 4. **Enterprise Features**: Team collaboration tools
 
-This implementation plan provides a structured approach to building RankSwipe while maintaining flexibility for iteration and improvement based on user feedback and technical discoveries during development.
+This implementation plan provides a structured approach to building pickr while maintaining flexibility for iteration and improvement based on user feedback and technical discoveries during development.
