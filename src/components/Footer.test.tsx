@@ -25,8 +25,8 @@ describe('Footer', () => {
 	it('renders footer with version and commit information', () => {
 		render(<Footer />);
 
-		expect(screen.getByText('BrainPatch')).toBeInTheDocument();
-		expect(screen.getByText('Intelligent Learning Platform')).toBeInTheDocument();
+		expect(screen.getByText('Pickr')).toBeInTheDocument();
+		expect(screen.getByText('Card Ranking Application')).toBeInTheDocument();
 		expect(screen.getByText('1.2.3')).toBeInTheDocument();
 		expect(screen.getByText('abc123d')).toBeInTheDocument(); // Short commit hash
 	});
@@ -61,7 +61,7 @@ describe('Footer', () => {
 
 		render(<Footer />);
 
-		expect(screen.getByText('BrainPatch')).toBeInTheDocument();
+		expect(screen.getByText('Pickr')).toBeInTheDocument();
 		expect(screen.getByText('dev')).toBeInTheDocument(); // Default version
 		expect(screen.getByText('unknown')).toBeInTheDocument(); // Default commit
 	});

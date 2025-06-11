@@ -12,9 +12,9 @@ export default function Footer() {
 			<div className="max-w-4xl mx-auto px-8 py-6">
 				<div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600">
 					<div className="mb-2 sm:mb-0">
-						<span className="font-medium">BrainPatch</span>
+						<span className="font-medium">Pickr</span>
 						<span className="mx-2">•</span>
-						<span>Intelligent Learning Platform</span>
+						<span>Card Ranking Application</span>
 						{!isProduction && (
 							<>
 								<span className="mx-2">•</span>

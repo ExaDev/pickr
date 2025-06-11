@@ -1,6 +1,6 @@
-# Contributing to BrainPatch
+# Contributing to Pickr
 
-Thank you for your interest in contributing to BrainPatch! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Pickr! This document provides guidelines and information for contributors.
 
 ## Development Workflow
 
@@ -42,10 +42,10 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) f
 
 ### Examples
 ```bash
-feat: add assessment question generation
-fix: resolve WebGPU compatibility issue
+feat: add card comparison algorithm
+fix: resolve swipe gesture issue
 docs: update installation instructions
-test: add integration tests for LLM provider
+test: add integration tests for ranking system
 ```
 
 ### Interactive Commits
@@ -157,11 +157,11 @@ src/
 └── test/            # Test utilities and setup
 ```
 
-### LLM Integration
-- **Browser-first**: Prioritise client-side LLM execution
-- **Multi-provider**: Support multiple LLM backends
-- **Fallback strategy**: Graceful degradation when needed
-- **Privacy**: Ensure data stays on device by default
+### Card Ranking Features
+- **Intuitive interface**: Prioritise user-friendly comparison flows
+- **Performance**: Handle large card sets efficiently
+- **Mobile-first**: Optimise for touch-based interactions
+- **Privacy**: All data processing happens client-side
 
 ### Component Guidelines
 - **TypeScript**: All components must be typed
@@ -177,4 +177,4 @@ src/
 
 ## License
 
-By contributing to BrainPatch, you agree that your contributions will be licensed under the same license as the project.
+By contributing to Pickr, you agree that your contributions will be licensed under the same license as the project.

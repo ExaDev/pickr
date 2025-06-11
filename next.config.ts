@@ -37,7 +37,7 @@ const nextConfig = {
 
 	// Environment variables for static export
 	env: {
-		NEXT_PUBLIC_APP_NAME: 'BrainPatch',
+		NEXT_PUBLIC_APP_NAME: 'Pickr',
 		NEXT_PUBLIC_APP_VERSION:
 			process.env.NEXT_PUBLIC_APP_VERSION || process.env.npm_package_version || 'dev',
 		NEXT_PUBLIC_COMMIT_HASH: process.env.NEXT_PUBLIC_COMMIT_HASH || 'unknown',
