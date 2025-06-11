@@ -20,34 +20,20 @@ test.describe('Pick/Discard Mode', () => {
 		await page.click('[data-testid="pack-card-Pick Discard Test Pack"]');
 		await page.click('button:has-text("Start Ranking")');
 
-		// Check default mode is pick
-		await expect(page.locator('button:has-text("Pick Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'true'
-		);
-		await expect(page.locator('button:has-text("Discard Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'false'
-		);
+		// Check default mode shows "Choose favorite"
+		await expect(page.locator('button').filter({ hasText: 'Choose favorite' })).toBeVisible();
 
 		// Check instructions show pick mode
 		await expect(page.locator('h2')).toContainText('Which do you prefer?');
 
-		// Switch to discard mode
-		await page.click('button:has-text("Discard Mode")');
+		// Switch to discard mode by clicking the mode toggle
+		await page.click('button:has-text("Choose favorite")');
 
-		// Check mode switched
-		await expect(page.locator('button:has-text("Pick Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'false'
-		);
-		await expect(page.locator('button:has-text("Discard Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'true'
-		);
+		// Check mode switched to "Remove unwanted"
+		await expect(page.locator('button').filter({ hasText: 'Remove unwanted' })).toBeVisible();
 
 		// Check instructions changed
-		await expect(page.locator('h2')).toContainText('Which do you want to discard?');
+		await expect(page.locator('h2')).toContainText('Which would you eliminate?');
 	});
 
 	test('should use keyboard shortcuts to switch modes', async ({ page }) => {
@@ -69,26 +55,17 @@ test.describe('Pick/Discard Mode', () => {
 		await page.click('[data-testid="pack-card-Keyboard Test Pack"]');
 		await page.click('button:has-text("Start Ranking")');
 
-		// Initially in pick mode
-		await expect(page.locator('button:has-text("Pick Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'true'
-		);
+		// Initially in pick mode - check for "Choose favorite"
+		await expect(page.locator('button').filter({ hasText: 'Choose favorite' })).toBeVisible();
 
 		// Press 'D' to switch to discard mode
 		await page.keyboard.press('d');
-		await expect(page.locator('button:has-text("Discard Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'true'
-		);
-		await expect(page.locator('h2')).toContainText('discard');
+		await expect(page.locator('button').filter({ hasText: 'Remove unwanted' })).toBeVisible();
+		await expect(page.locator('h2')).toContainText('eliminate');
 
 		// Press 'P' to switch back to pick mode
 		await page.keyboard.press('p');
-		await expect(page.locator('button:has-text("Pick Mode")')).toHaveAttribute(
-			'aria-pressed',
-			'true'
-		);
+		await expect(page.locator('button').filter({ hasText: 'Choose favorite' })).toBeVisible();
 		await expect(page.locator('h2')).toContainText('prefer');
 	});
 
@@ -117,11 +94,11 @@ test.describe('Pick/Discard Mode', () => {
 		await page.click('[data-testid="pack-card-Multi Card Test Pack"]');
 		await page.click('button:has-text("Start Ranking")');
 
-		// For 2-card comparison, should show "← → arrows to pick"
-		const keyboardHint = page.locator('div').filter({ hasText: /Pick mode:.*arrows to pick/ });
+		// For 2-card comparison, should show simplified "← → to choose"
+		const keyboardHint = page.locator('div').filter({ hasText: /← → to choose/ });
 		await expect(keyboardHint).toBeVisible();
 
-		// Check that it mentions arrows directly performing action (not navigation)
-		await expect(keyboardHint).toContainText('arrows to pick');
+		// Check simplified keyboard hints
+		await expect(keyboardHint).toContainText('← → to choose');
 	});
 });

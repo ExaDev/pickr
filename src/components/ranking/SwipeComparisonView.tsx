@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Card, Comparison } from '../../types';
 import { Button } from '../ui/Button';
 import { SwipeableCard } from './SwipeableCard';
@@ -41,22 +41,40 @@ export function SwipeComparisonView({
 		return () => clearTimeout(timer);
 	}, []);
 
-	// Helper function to execute the current mode action
-	const executeAction = (card: Card) => {
-		if (mode === 'pick') {
-			handleSelection(card);
-		} else {
-			// In discard mode, select the other card(s)
-			const otherCards = comparison.cards.filter(c => c.id !== card.id);
-			if (otherCards.length === 1) {
-				handleSelection(otherCards[0]);
-			} else if (otherCards.length > 1) {
-				// For multi-card comparisons in discard mode, we'd need more complex logic
-				// For now, just pick the first non-discarded card
-				handleSelection(otherCards[0]);
+	const handleSelection = useCallback(
+		async (card: Card) => {
+			setIsSubmitting(true);
+			setShowInstructions(false);
+
+			try {
+				onSelect(card);
+			} finally {
+				setIsSubmitting(false);
+				setSelectedCard(null);
 			}
-		}
-	};
+		},
+		[onSelect]
+	);
+
+	// Helper function to execute the current mode action
+	const executeAction = useCallback(
+		(card: Card) => {
+			if (mode === 'pick') {
+				handleSelection(card);
+			} else {
+				// In discard mode, select the other card(s)
+				const otherCards = comparison.cards.filter(c => c.id !== card.id);
+				if (otherCards.length === 1) {
+					handleSelection(otherCards[0]);
+				} else if (otherCards.length > 1) {
+					// For multi-card comparisons in discard mode, we'd need more complex logic
+					// For now, just pick the first non-discarded card
+					handleSelection(otherCards[0]);
+				}
+			}
+		},
+		[mode, comparison.cards, handleSelection]
+	);
 
 	// Keyboard navigation
 	useEffect(() => {
@@ -135,7 +153,18 @@ export function SwipeComparisonView({
 
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [disabled, isSubmitting, selectedCard, focusedCardIndex, comparison.cards, mode]);
+	}, [
+		disabled,
+		isSubmitting,
+		selectedCard,
+		focusedCardIndex,
+		comparison.cards,
+		executeAction,
+		handleSelection,
+		setMode,
+		setFocusedCardIndex,
+		setSelectedCard,
+	]);
 
 	const handleCardSwipeRight = (card: Card) => {
 		if (disabled || isSubmitting) return;
@@ -155,18 +184,6 @@ export function SwipeComparisonView({
 	const handleCardTap = (card: Card) => {
 		if (disabled || isSubmitting) return;
 		setSelectedCard(card);
-	};
-
-	const handleSelection = async (card: Card) => {
-		setIsSubmitting(true);
-		setShowInstructions(false);
-
-		try {
-			onSelect(card);
-		} finally {
-			setIsSubmitting(false);
-			setSelectedCard(null);
-		}
 	};
 
 	const handleConfirm = () => {
@@ -203,32 +220,43 @@ export function SwipeComparisonView({
 				</div>
 			)}
 
-			{/* Mode toggle */}
+			{/* Mode toggle - simplified and less prominent */}
 			<div className="flex items-center justify-center">
-				<div className="bg-muted p-1 rounded-lg flex gap-1">
+				<div className="flex items-center gap-2 text-sm text-muted-foreground">
+					<span>Mode:</span>
 					<button
 						type="button"
-						onClick={() => setMode('pick')}
-						className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-							mode === 'pick'
-								? 'bg-primary text-primary-foreground shadow-sm'
-								: 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-						}`}
-						aria-pressed={mode === 'pick'}
+						onClick={() => setMode(mode === 'pick' ? 'discard' : 'pick')}
+						className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+						aria-label={`Switch to ${mode === 'pick' ? 'discard' : 'pick'} mode. Currently in ${mode} mode.`}
 					>
-						Pick Mode
-					</button>
-					<button
-						type="button"
-						onClick={() => setMode('discard')}
-						className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-							mode === 'discard'
-								? 'bg-primary text-primary-foreground shadow-sm'
-								: 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-						}`}
-						aria-pressed={mode === 'discard'}
-					>
-						Discard Mode
+						{mode === 'pick' ? (
+							<>
+								<span className="w-2 h-2 rounded-full bg-green-500" />
+								Choose favorite
+							</>
+						) : (
+							<>
+								<span className="w-2 h-2 rounded-full bg-red-500" />
+								Remove unwanted
+							</>
+						)}
+						<svg
+							className="w-3 h-3"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							role="img"
+							aria-label="Switch mode"
+						>
+							<title>Switch mode</title>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+							/>
+						</svg>
 					</button>
 				</div>
 			</div>
@@ -244,35 +272,13 @@ export function SwipeComparisonView({
 						transition={{ duration: 0.3 }}
 					>
 						<h2 className="text-2xl font-semibold">
-							{mode === 'pick' ? 'Which do you prefer?' : 'Which do you want to discard?'}
+							{mode === 'pick' ? 'Which do you prefer?' : 'Which would you eliminate?'}
 						</h2>
 						<p className="text-muted-foreground">
 							{comparison.cards.length === 2 ? (
-								mode === 'pick' ? (
-									<>
-										Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
-										<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to pick, or tap to
-										select manually
-									</>
-								) : (
-									<>
-										Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
-										<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to discard, or tap
-										to select manually
-									</>
-								)
-							) : mode === 'pick' ? (
-								<>
-									Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
-									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to navigate,{' '}
-									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> to pick
-								</>
+								<>Use arrow keys or tap to choose</>
 							) : (
-								<>
-									Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
-									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to navigate,{' '}
-									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> to discard
-								</>
+								<>Use arrow keys to browse, Space to select</>
 							)}
 						</p>
 					</motion.div>
@@ -319,16 +325,16 @@ export function SwipeComparisonView({
 							/>
 						</button>
 
-						{/* Focus indicator for multi-card comparisons */}
+						{/* Subtle focus indicator for multi-card comparisons */}
 						{comparison.cards.length > 2 && focusedCardIndex === index && (
 							<motion.div
-								className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-medium shadow-lg"
+								className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm text-foreground px-2 py-1 rounded text-xs font-medium shadow-sm border"
 								initial={{ scale: 0, opacity: 0 }}
-								animate={{ scale: 1, opacity: 1 }}
+								animate={{ scale: 1, opacity: 0.9 }}
 								exit={{ scale: 0, opacity: 0 }}
 								transition={{ duration: 0.2 }}
 							>
-								Press Space to {mode}
+								Space to {mode === 'pick' ? 'choose' : 'eliminate'}
 							</motion.div>
 						)}
 					</motion.div>
@@ -392,24 +398,18 @@ export function SwipeComparisonView({
 				</div>
 			)}
 
-			{/* Keyboard shortcuts hint */}
-			<motion.section
-				className="text-center text-xs text-muted-foreground space-y-1"
+			{/* Simplified keyboard hints */}
+			<motion.div
+				className="text-center text-xs text-muted-foreground"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				transition={{ delay: 1 }}
-				aria-label="Keyboard shortcuts"
+				transition={{ delay: 2 }}
 			>
 				<div>
-					{comparison.cards.length === 2
-						? `${mode === 'pick' ? 'Pick' : 'Discard'} mode: ← → arrows to ${mode} • P/D to switch mode • Enter to confirm • Esc to cancel`
-						: `${mode === 'pick' ? 'Pick' : 'Discard'} mode: ← → to navigate • Space to ${mode} • P/D to switch mode • Enter to confirm`}
+					Keyboard: {comparison.cards.length === 2 ? '← → to choose' : '← → Space to select'} • P/D
+					to switch mode
 				</div>
-				<div>
-					Quick select: 1 for left option • 2 for right option • P for pick mode • D for discard
-					mode
-				</div>
-			</motion.section>
+			</motion.div>
 
 			{/* Loading overlay */}
 			<AnimatePresence>
