@@ -7,7 +7,7 @@ import { PickrCard } from '../../../components/cards/PickrCard';
 import { RankingChart } from '../../../components/results/RankingChart';
 import { Button } from '../../../components/ui/Button';
 import {
-	Card,
+	Card as UICard,
 	CardContent,
 	CardDescription,
 	CardHeader,
@@ -17,7 +17,7 @@ import { encodeToPaco, getShareableUrl } from '../../../lib/paco/encoding';
 import { calculateFinalRankings } from '../../../lib/ranking/utils';
 import { formatDate, formatDuration } from '../../../lib/utils';
 import { useRankingStore, useResultsStore } from '../../../store';
-import type { PacoData, RankingResult, RankingSession } from '../../../types';
+import type { Card, PacoData, RankingResult, RankingSession } from '../../../types';
 
 interface ResultsPageProps {
 	params: Promise<{
@@ -183,24 +183,24 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.2 }}
 				>
-					<Card>
+					<UICard>
 						<CardHeader className="pb-2">
 							<CardDescription>Total Comparisons</CardDescription>
 							<CardTitle className="text-3xl">{result.metadata.totalComparisons}</CardTitle>
 						</CardHeader>
-					</Card>
-					<Card>
+					</UICard>
+					<UICard>
 						<CardHeader className="pb-2">
 							<CardDescription>Time Taken</CardDescription>
 							<CardTitle className="text-3xl">{duration}</CardTitle>
 						</CardHeader>
-					</Card>
-					<Card>
+					</UICard>
+					<UICard>
 						<CardHeader className="pb-2">
 							<CardDescription>Algorithm Used</CardDescription>
 							<CardTitle className="text-xl capitalize">{result.metadata.algorithm}</CardTitle>
 						</CardHeader>
-					</Card>
+					</UICard>
 				</motion.div>
 
 				{/* Chart Visualization */}

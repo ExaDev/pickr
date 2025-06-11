@@ -92,8 +92,8 @@ export default function RankingPage({ params }: RankingPageProps) {
 
 		// Check if complete
 		if (
-			isRankingComplete(
-				pack?.cards,
+			pack && isRankingComplete(
+				pack.cards,
 				[...currentSession.comparisons, completedComparison],
 				currentSession.settings
 			)
