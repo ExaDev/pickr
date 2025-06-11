@@ -1,8 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 test.describe('Enhanced Sharing System', () => {
 	// Helper to complete a ranking and get to results page
-	async function completeRankingAndGetResults(page: any, packName = 'Test Pack') {
+	async function completeRankingAndGetResults(page: Page, packName = 'Test Pack') {
 		await page.goto('/');
 		await page
 			.getByRole('button', { name: /create new pack/i })
@@ -81,7 +81,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should access shared results via URL', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -98,7 +98,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should display shared results with proper metadata', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page, 'Shared Test Pack');
+		const _resultsUrl = await completeRankingAndGetResults(page, 'Shared Test Pack');
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -112,7 +112,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should show visualization in shared results', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -129,7 +129,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should display detailed rankings in shared results', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -164,7 +164,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should navigate from shared results to create new ranking', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -180,7 +180,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should navigate to view another result from shared page', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -211,7 +211,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should maintain shared result state across refresh', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();
@@ -245,13 +245,13 @@ test.describe('Enhanced Sharing System', () => {
 
 	test('should generate different codes for different results', async ({ page }) => {
 		// Complete first ranking
-		const firstResultsUrl = await completeRankingAndGetResults(page, 'First Pack');
+		const _firstResultsUrl = await completeRankingAndGetResults(page, 'First Pack');
 		await page.getByRole('button', { name: /share results/i }).click();
 		const firstShareCode = await page.locator('input[readonly]').inputValue();
 		await page.getByRole('button', { name: /close/i }).click();
 
 		// Complete second ranking
-		const secondResultsUrl = await completeRankingAndGetResults(page, 'Second Pack');
+		const _secondResultsUrl = await completeRankingAndGetResults(page, 'Second Pack');
 		await page.getByRole('button', { name: /share results/i }).click();
 		const secondShareCode = await page.locator('input[readonly]').inputValue();
 
@@ -264,7 +264,7 @@ test.describe('Enhanced Sharing System', () => {
 	});
 
 	test('should show footer attribution on shared results', async ({ page }) => {
-		const resultsUrl = await completeRankingAndGetResults(page);
+		const _resultsUrl = await completeRankingAndGetResults(page);
 
 		// Get and visit share URL
 		await page.getByRole('button', { name: /share results/i }).click();

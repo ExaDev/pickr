@@ -170,84 +170,82 @@ export function supportsWebP(): Promise<boolean> {
 /**
  * Storage utilities for images
  */
-export class ImageStorage {
-	private static readonly STORAGE_KEY = 'pickr_images';
-	private static readonly MAX_STORAGE_SIZE = 50 * 1024 * 1024; // 50MB
+const STORAGE_KEY = 'pickr_images';
+const MAX_STORAGE_SIZE = 50 * 1024 * 1024; // 50MB
 
-	/**
-	 * Store image data URL with an ID
-	 */
-	static async storeImage(id: string, dataUrl: string): Promise<void> {
-		try {
-			const storage = ImageStorage.getStorage();
-			storage[id] = dataUrl;
+function getStorage(): Record<string, string> {
+	try {
+		const data = localStorage.getItem(STORAGE_KEY);
+		return data ? JSON.parse(data) : {};
+	} catch {
+		return {};
+	}
+}
 
-			// Check storage size
-			const totalSize = ImageStorage.calculateStorageSize(storage);
-			if (totalSize > ImageStorage.MAX_STORAGE_SIZE) {
-				throw new Error('Storage limit exceeded');
-			}
+function calculateStorageSize(storage: Record<string, string>): number {
+	return Object.values(storage).reduce((total, dataUrl) => {
+		return total + dataUrl.length * 0.75; // Approximate bytes (base64 overhead)
+	}, 0);
+}
 
-			localStorage.setItem(ImageStorage.STORAGE_KEY, JSON.stringify(storage));
-		} catch (error) {
-			console.error('Failed to store image:', error);
-			throw error;
+/**
+ * Store image data URL with an ID
+ */
+export async function storeImage(id: string, dataUrl: string): Promise<void> {
+	try {
+		const storage = getStorage();
+		storage[id] = dataUrl;
+
+		// Check storage size
+		const totalSize = calculateStorageSize(storage);
+		if (totalSize > MAX_STORAGE_SIZE) {
+			throw new Error('Storage limit exceeded');
 		}
-	}
 
-	/**
-	 * Retrieve image data URL by ID
-	 */
-	static getImage(id: string): string | null {
-		try {
-			const storage = ImageStorage.getStorage();
-			return storage[id] || null;
-		} catch (error) {
-			console.error('Failed to retrieve image:', error);
-			return null;
-		}
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+	} catch (error) {
+		console.error('Failed to store image:', error);
+		throw error;
 	}
+}
 
-	/**
-	 * Remove image by ID
-	 */
-	static removeImage(id: string): void {
-		try {
-			const storage = ImageStorage.getStorage();
-			delete storage[id];
-			localStorage.setItem(ImageStorage.STORAGE_KEY, JSON.stringify(storage));
-		} catch (error) {
-			console.error('Failed to remove image:', error);
-		}
+/**
+ * Retrieve image data URL by ID
+ */
+export function getImage(id: string): string | null {
+	try {
+		const storage = getStorage();
+		return storage[id] || null;
+	} catch (error) {
+		console.error('Failed to retrieve image:', error);
+		return null;
 	}
+}
 
-	/**
-	 * Clear all stored images
-	 */
-	static clearAll(): void {
-		localStorage.removeItem(ImageStorage.STORAGE_KEY);
+/**
+ * Remove image by ID
+ */
+export function removeImage(id: string): void {
+	try {
+		const storage = getStorage();
+		delete storage[id];
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+	} catch (error) {
+		console.error('Failed to remove image:', error);
 	}
+}
 
-	/**
-	 * Get current storage size in bytes
-	 */
-	static getStorageSize(): number {
-		const storage = ImageStorage.getStorage();
-		return ImageStorage.calculateStorageSize(storage);
-	}
+/**
+ * Clear all stored images
+ */
+export function clearAllImages(): void {
+	localStorage.removeItem(STORAGE_KEY);
+}
 
-	private static getStorage(): Record<string, string> {
-		try {
-			const data = localStorage.getItem(ImageStorage.STORAGE_KEY);
-			return data ? JSON.parse(data) : {};
-		} catch {
-			return {};
-		}
-	}
-
-	private static calculateStorageSize(storage: Record<string, string>): number {
-		return Object.values(storage).reduce((total, dataUrl) => {
-			return total + dataUrl.length * 0.75; // Approximate bytes (base64 overhead)
-		}, 0);
-	}
+/**
+ * Get current storage size in bytes
+ */
+export function getStorageSize(): number {
+	const storage = getStorage();
+	return calculateStorageSize(storage);
 }

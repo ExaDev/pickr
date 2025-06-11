@@ -21,7 +21,7 @@ export function PackGrid({
 	if (loading) {
 		return (
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((skeletonId) => (
+				{Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map(skeletonId => (
 					<Card key={skeletonId} className="animate-pulse">
 						<CardHeader>
 							<div className="h-6 bg-muted rounded w-3/4" />

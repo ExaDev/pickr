@@ -1,8 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 test.describe('Results and Sharing', () => {
 	// Helper to complete a quick ranking
-	async function completeQuickRanking(page: any) {
+	async function completeQuickRanking(page: Page) {
 		await page.goto('/');
 		await page
 			.getByRole('button', { name: /create new pack/i })
@@ -199,7 +199,7 @@ test.describe('Results and Sharing', () => {
 		await completeQuickRanking(page);
 
 		// Note the URL
-		const currentUrl = page.url();
+		const _currentUrl = page.url();
 
 		// Refresh page
 		await page.reload();

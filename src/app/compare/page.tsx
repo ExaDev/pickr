@@ -247,7 +247,10 @@ export default function ComparePage() {
 									{errors.map(
 										(error, index) =>
 											error && (
-												<p key={`error-${index}-${error.slice(0, 20)}`} className="text-sm text-destructive">
+												<p
+													key={`error-${index}-${error.slice(0, 20)}`}
+													className="text-sm text-destructive"
+												>
 													Ranking {index + 1}: {error}
 												</p>
 											)

@@ -272,8 +272,8 @@ function TemplateCard({ template, onUse }: TemplateCardProps) {
 						{template.cards.length} items to rank:
 					</p>
 					<div className="flex flex-wrap gap-1">
-						{template.cards.slice(0, 6).map((card, index) => (
-							<span key={index} className="inline-block px-2 py-1 bg-muted text-xs rounded-md">
+						{template.cards.slice(0, 6).map(card => (
+							<span key={card} className="inline-block px-2 py-1 bg-muted text-xs rounded-md">
 								{card}
 							</span>
 						))}
@@ -288,9 +288,9 @@ function TemplateCard({ template, onUse }: TemplateCardProps) {
 				{/* Tags */}
 				{template.tags.length > 0 && (
 					<div className="flex flex-wrap gap-1">
-						{template.tags.slice(0, 3).map((tag, index) => (
+						{template.tags.slice(0, 3).map(tag => (
 							<span
-								key={index}
+								key={tag}
 								className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
 							>
 								#{tag}

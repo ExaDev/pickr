@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { expect, test } from '@playwright/test';
 
 test.describe('Image Upload', () => {
@@ -13,7 +13,7 @@ test.describe('Image Upload', () => {
 
 	test('should upload and preview image', async ({ page }) => {
 		// Create a simple test image file
-		const testImagePath = path.join(__dirname, '..', 'fixtures', 'test-image.png');
+		const _testImagePath = path.join(__dirname, '..', 'fixtures', 'test-image.png');
 
 		// Fill required fields first
 		await page.getByLabel('Pack Name').fill('Image Test Pack');

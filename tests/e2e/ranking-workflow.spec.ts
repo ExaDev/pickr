@@ -1,8 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 test.describe('Ranking Workflow', () => {
 	// Helper function to create a pack with test data
-	async function createTestPack(page: any, items: string[] = ['Apple', 'Banana', 'Cherry']) {
+	async function createTestPack(page: Page, items: string[] = ['Apple', 'Banana', 'Cherry']) {
 		await page.goto('/');
 		await page
 			.getByRole('button', { name: /create new pack/i })
