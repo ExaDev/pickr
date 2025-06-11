@@ -5,7 +5,7 @@ const nextConfig = {
 
 	// GitHub Pages deployment configuration
 	basePath: '/pickr',
-	assetPrefix: '/pickr/',
+	assetPrefix: '/pickr',
 
 	// Static export optimizations
 	trailingSlash: true,
