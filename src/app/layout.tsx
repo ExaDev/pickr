@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SkipLinks } from '../components/accessibility/SkipLinks';
 import Footer from '../components/Footer';
 import MSWProvider from '../components/MSWProvider';
 import './globals.css';
@@ -21,8 +22,11 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className="antialiased min-h-screen flex flex-col">
+				<SkipLinks />
 				<MSWProvider>
-					<div className="flex-1">{children}</div>
+					<main id="main-content" className="flex-1" tabIndex={-1}>
+						{children}
+					</main>
 					<Footer />
 				</MSWProvider>
 			</body>

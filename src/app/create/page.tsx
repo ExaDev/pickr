@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CardForm } from '../../components/cards/CardForm';
 import { PickrCard } from '../../components/cards/PickrCard';
 import { Button } from '../../components/ui/Button';
@@ -13,6 +13,7 @@ import {
 	CardTitle,
 } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
+import { useKeyboardShortcuts } from '../../lib/hooks/useKeyboardShortcuts';
 import { useCardsStore } from '../../store';
 import type { CardInput } from '../../types';
 
@@ -62,19 +63,44 @@ export default function CreatePackPage() {
 
 	const canCreate = packName.trim() && cards.length >= 2;
 
+	// Keyboard shortcuts for create page
+	useKeyboardShortcuts([
+		{
+			key: 'Enter',
+			modifiers: ['ctrl'],
+			handler: () => {
+				if (canCreate) {
+					handleCreatePack();
+				}
+			},
+			description: 'Create pack (Ctrl+Enter)',
+			disabled: !canCreate || isCreating
+		},
+		{
+			key: 'Escape',
+			handler: () => {
+				router.back();
+			},
+			description: 'Go back (Escape)'
+		}
+	]);
+
 	return (
 		<main className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8 max-w-4xl">
 				{/* Header */}
 				<header className="mb-8">
 					<div className="flex items-center gap-4 mb-4">
-						<Button variant="ghost" onClick={() => router.back()}>
+						<Button variant="ghost" onClick={() => router.back()} aria-label="Go back to previous page">
 							← Back
 						</Button>
 						<div>
 							<h1 className="text-3xl font-bold">Create New Pack</h1>
 							<p className="text-muted-foreground">Add items you want to rank and compare</p>
 						</div>
+					</div>
+					<div className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
+						<strong>Keyboard shortcuts:</strong> Ctrl+Enter to create pack • Escape to go back
 					</div>
 				</header>
 

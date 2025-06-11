@@ -5,6 +5,7 @@ import { ExamplePacks } from '../components/cards/ExamplePacks';
 import { PackGrid } from '../components/cards/PackGrid';
 import { TemplateBrowser } from '../components/templates/TemplateBrowser';
 import { Button } from '../components/ui/Button';
+import { useKeyboardShortcuts } from '../lib/hooks/useKeyboardShortcuts';
 import { useCardsStore } from '../store';
 
 export default function Home() {
@@ -25,18 +26,35 @@ export default function Home() {
 		}
 	};
 
+	// Global keyboard shortcuts for homepage
+	useKeyboardShortcuts([
+		{
+			key: 'c',
+			handler: handleCreatePack,
+			description: 'Create new pack (C)'
+		},
+		{
+			key: 'n',
+			handler: handleCreatePack,
+			description: 'Create new pack (N)'
+		}
+	]);
+
 	return (
 		<main className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
 				{/* Header */}
 				<header className="text-center mb-12">
 					<h1 className="text-4xl font-bold text-foreground mb-4">pickr</h1>
-					<p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+					<p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
 						Create rankings through intuitive swipe-based comparisons. Compare anything from movies
 						to life decisions with simple, binary choices.
 					</p>
+					<div className="text-sm text-muted-foreground mb-8 bg-muted/30 p-3 rounded-lg max-w-lg mx-auto">
+						<strong>Quick actions:</strong> Press C or N to create a new pack
+					</div>
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-						<Button onClick={handleCreatePack} size="lg">
+						<Button onClick={handleCreatePack} size="lg" aria-describedby="keyboard-hint">
 							Create New Pack
 						</Button>
 						<Button variant="outline" size="lg" onClick={() => router.push('/templates')}>

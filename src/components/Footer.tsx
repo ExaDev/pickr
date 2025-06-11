@@ -8,7 +8,7 @@ export default function Footer() {
 	const shortCommit = commitHash !== 'unknown' ? commitHash.slice(0, 7) : 'unknown';
 
 	return (
-		<footer className="bg-gray-50 border-t border-gray-200 mt-auto">
+		<footer id="footer" className="bg-gray-50 border-t border-gray-200 mt-auto">
 			<div className="max-w-4xl mx-auto px-8 py-6">
 				<div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600">
 					<div className="mb-2 sm:mb-0">

@@ -27,6 +27,7 @@ export function SwipeComparisonView({
 	const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showInstructions, setShowInstructions] = useState(true);
+	const [focusedCardIndex, setFocusedCardIndex] = useState<number>(0);
 
 	// Hide instructions after first interaction
 	useEffect(() => {
@@ -36,6 +37,54 @@ export function SwipeComparisonView({
 
 		return () => clearTimeout(timer);
 	}, []);
+
+	// Keyboard navigation
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (disabled || isSubmitting) return;
+
+			switch (event.key) {
+				case 'ArrowLeft':
+					event.preventDefault();
+					setFocusedCardIndex(0);
+					setSelectedCard(comparison.cards[0]);
+					break;
+				case 'ArrowRight':
+					event.preventDefault();
+					setFocusedCardIndex(1);
+					setSelectedCard(comparison.cards[1]);
+					break;
+				case 'Enter':
+					event.preventDefault();
+					if (selectedCard) {
+						handleSelection(selectedCard);
+					} else if (comparison.cards[focusedCardIndex]) {
+						handleSelection(comparison.cards[focusedCardIndex]);
+					}
+					break;
+				case ' ':
+				case 'Escape':
+					event.preventDefault();
+					setSelectedCard(null);
+					break;
+				case '1':
+					event.preventDefault();
+					if (comparison.cards[0]) {
+						handleSelection(comparison.cards[0]);
+					}
+					break;
+				case '2':
+					event.preventDefault();
+					if (comparison.cards[1]) {
+						handleSelection(comparison.cards[1]);
+					}
+					break;
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+		return () => document.removeEventListener('keydown', handleKeyDown);
+	}, [disabled, isSubmitting, selectedCard, focusedCardIndex, comparison.cards]);
 
 	const handleCardSwipeRight = (card: Card) => {
 		if (disabled || isSubmitting) return;
@@ -122,7 +171,8 @@ export function SwipeComparisonView({
 			</AnimatePresence>
 
 			{/* Cards comparison */}
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+			<fieldset className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 border-0 p-0">
+				<legend className="sr-only">Comparison cards</legend>
 				{comparison.cards.map((card, index) => (
 					<motion.div
 						key={card.id}
@@ -135,19 +185,30 @@ export function SwipeComparisonView({
 							stiffness: 100,
 						}}
 					>
-						<SwipeableCard
-							card={card}
-							onSwipeRight={() => handleCardSwipeRight(card)}
-							onSwipeLeft={() => handleCardSwipeLeft(card)}
-							onTap={() => handleCardTap(card)}
-							disabled={disabled || isSubmitting}
-							className={`transition-all duration-300 ${
-								selectedCard?.id === card.id ? 'ring-2 ring-primary ring-offset-4' : ''
+						<button
+							type="button"
+							aria-label={`Option ${index + 1}: ${card.content}${selectedCard?.id === card.id ? ' (selected)' : ''}${focusedCardIndex === index ? ' (focused)' : ''}`}
+							aria-pressed={selectedCard?.id === card.id}
+							onClick={() => handleCardTap(card)}
+							onFocus={() => setFocusedCardIndex(index)}
+							className={`w-full p-0 border-0 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg ${
+								focusedCardIndex === index ? 'ring-2 ring-primary/50' : ''
 							}`}
-						/>
+						>
+							<SwipeableCard
+								card={card}
+								onSwipeRight={() => handleCardSwipeRight(card)}
+								onSwipeLeft={() => handleCardSwipeLeft(card)}
+								onTap={() => handleCardTap(card)}
+								disabled={disabled || isSubmitting}
+								className={`transition-all duration-300 ${
+									selectedCard?.id === card.id ? 'ring-2 ring-primary ring-offset-4' : ''
+								} ${focusedCardIndex === index ? 'shadow-lg' : ''}`}
+							/>
+						</button>
 					</motion.div>
 				))}
-			</div>
+			</fieldset>
 
 			{/* VS indicator */}
 			<div className="flex items-center justify-center">
@@ -207,14 +268,16 @@ export function SwipeComparisonView({
 			)}
 
 			{/* Keyboard shortcuts hint */}
-			<motion.div
-				className="text-center text-xs text-muted-foreground"
+			<motion.section
+				className="text-center text-xs text-muted-foreground space-y-1"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ delay: 1 }}
+				aria-label="Keyboard shortcuts"
 			>
-				Tip: Use arrow keys ← → to select, Enter to confirm, or Space to skip
-			</motion.div>
+				<div>Keyboard shortcuts: ← → arrows to select • Enter to confirm • Space/Esc to cancel</div>
+				<div>Quick select: 1 for left option • 2 for right option</div>
+			</motion.section>
 
 			{/* Loading overlay */}
 			<AnimatePresence>
