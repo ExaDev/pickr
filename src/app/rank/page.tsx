@@ -1,33 +1,28 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
-import { RankingSidebar } from '../../../components/ranking/RankingSidebar';
-import { SwipeComparisonView } from '../../../components/ranking/SwipeComparisonView';
-import { Button } from '../../../components/ui/Button';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { RankingSidebar } from '../../components/ranking/RankingSidebar';
+import { SwipeComparisonView } from '../../components/ranking/SwipeComparisonView';
+import { Button } from '../../components/ui/Button';
 import {
 	calculateFinalRankings,
 	calculateProgress,
 	getDefaultRankingSettings,
 	generateNextComparison as getNextComparison,
 	isRankingComplete,
-} from '../../../lib/ranking/utils';
-import { useCardsStore, useRankingStore } from '../../../store';
-import type { Card, Comparison, RankedCard } from '../../../types';
+} from '../../lib/ranking/utils';
+import { useCardsStore, useRankingStore } from '../../store';
+import type { Card, Comparison, RankedCard } from '../../types';
 
-interface RankingPageProps {
-	params: Promise<{
-		packId: string;
-	}>;
-}
-
-export default function RankingPage({ params }: RankingPageProps) {
-	const resolvedParams = use(params);
+function RankingPageContent() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const packId = searchParams.get('packId');
 	// const { getPackById } = useCardsStore(); // Not needed since we get pack from store state directly
 	const { currentSession, startSession, submitComparison, endSession } = useRankingStore();
 
-	const [pack, _setPack] = useState(useCardsStore.getState().getPackById(resolvedParams.packId));
+	const [pack, _setPack] = useState(packId ? useCardsStore.getState().getPackById(packId) : null);
 	const [currentComparison, setCurrentComparison] = useState<Comparison | null>(null);
 	const [rankings, setRankings] = useState<RankedCard[]>([]);
 	const [isComplete, setIsComplete] = useState(false);
@@ -35,21 +30,26 @@ export default function RankingPage({ params }: RankingPageProps) {
 
 	// Initialize session when component mounts
 	useEffect(() => {
+		if (!packId) {
+			router.push('/');
+			return;
+		}
+
 		if (!pack) {
 			router.push('/');
 			return;
 		}
 
-		if (!currentSession || currentSession.packId !== resolvedParams.packId) {
+		if (!currentSession || currentSession.packId !== packId) {
 			const _session = startSession({
-				packId: resolvedParams.packId,
+				packId: packId,
 				settings: getDefaultRankingSettings(),
 			});
 
 			// Generate first comparison
 			generateNextComparison();
 		}
-	}, [pack, resolvedParams.packId, currentSession, router, startSession]);
+	}, [pack, packId, currentSession, router, startSession]);
 
 	// Generate next comparison
 	const generateNextComparison = () => {
@@ -136,7 +136,7 @@ export default function RankingPage({ params }: RankingPageProps) {
 	// Handle completion and navigation to results
 	const handleViewResults = () => {
 		if (!currentSession) return;
-		router.push(`/results/${currentSession.id}`);
+		router.push(`/results?sessionId=${currentSession.id}`);
 	};
 
 	if (!pack) {
@@ -249,5 +249,22 @@ export default function RankingPage({ params }: RankingPageProps) {
 				onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
 			/>
 		</div>
+	);
+}
+
+export default function RankingPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className="min-h-screen bg-background flex items-center justify-center">
+					<div className="text-center">
+						<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+						<p className="text-muted-foreground">Loading ranking page...</p>
+					</div>
+				</div>
+			}
+		>
+			<RankingPageContent />
+		</Suspense>
 	);
 }

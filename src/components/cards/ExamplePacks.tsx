@@ -32,7 +32,7 @@ export function ExamplePacks() {
 		});
 
 		// Navigate to the ranking page
-		router.push(`/rank/${newPack.id}`);
+		router.push(`/rank?packId=${newPack.id}`);
 	};
 
 	const categoryPacks = getExamplePacksByCategory(selectedCategory);

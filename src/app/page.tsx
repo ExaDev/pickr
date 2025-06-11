@@ -17,7 +17,7 @@ export default function Home() {
 	};
 
 	const handleSelectPack = (pack: { id: string }) => {
-		router.push(`/rank/${pack.id}`);
+		router.push(`/rank?packId=${pack.id}`);
 	};
 
 	const handleDeletePack = (packId: string) => {

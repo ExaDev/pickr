@@ -1,33 +1,28 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
-import { PickrCard } from '../../../components/cards/PickrCard';
-import { RankingChart } from '../../../components/results/RankingChart';
-import { Button } from '../../../components/ui/Button';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { PickrCard } from '../../components/cards/PickrCard';
+import { RankingChart } from '../../components/results/RankingChart';
+import { Button } from '../../components/ui/Button';
 import {
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
 	Card as UICard,
-} from '../../../components/ui/Card';
-import { encodeToPaco, getShareableUrl } from '../../../lib/paco/encoding';
-import { calculateFinalRankings } from '../../../lib/ranking/utils';
-import { formatDate, formatDuration } from '../../../lib/utils';
-import { useRankingStore, useResultsStore } from '../../../store';
-import type { Card, PacoData, RankingResult, RankingSession } from '../../../types';
+} from '../../components/ui/Card';
+import { encodeToPaco, getShareableUrl } from '../../lib/paco/encoding';
+import { calculateFinalRankings } from '../../lib/ranking/utils';
+import { formatDate, formatDuration } from '../../lib/utils';
+import { useRankingStore, useResultsStore } from '../../store';
+import type { Card, PacoData, RankingResult, RankingSession } from '../../types';
 
-interface ResultsPageProps {
-	params: Promise<{
-		sessionId: string;
-	}>;
-}
-
-export default function ResultsPage({ params }: ResultsPageProps) {
-	const resolvedParams = use(params);
+function ResultsPageContent() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const sessionId = searchParams.get('sessionId');
 	const { getSessionById } = useRankingStore();
 	const { addResult } = useResultsStore();
 
@@ -38,7 +33,12 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 	const [showShareModal, setShowShareModal] = useState(false);
 
 	useEffect(() => {
-		const sessionData = getSessionById(resolvedParams.sessionId);
+		if (!sessionId) {
+			router.push('/');
+			return;
+		}
+
+		const sessionData = getSessionById(sessionId);
 		if (!sessionData) {
 			router.push('/');
 			return;
@@ -100,7 +100,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 				console.error('Failed to generate share URL:', error);
 			}
 		}
-	}, [resolvedParams.sessionId, router, getSessionById, addResult]);
+	}, [sessionId, router, getSessionById, addResult]);
 
 	const handleCopyUrl = async () => {
 		if (!shareUrl) return;
@@ -329,5 +329,22 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 				)}
 			</div>
 		</div>
+	);
+}
+
+export default function ResultsPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className="min-h-screen bg-background flex items-center justify-center">
+					<div className="text-center">
+						<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+						<p className="text-muted-foreground">Loading results page...</p>
+					</div>
+				</div>
+			}
+		>
+			<ResultsPageContent />
+		</Suspense>
 	);
 }

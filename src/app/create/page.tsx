@@ -53,7 +53,7 @@ export default function CreatePackPage() {
 			}
 
 			// Navigate to the ranking page
-			router.push(`/rank/${newPack.id}`);
+			router.push(`/rank?packId=${newPack.id}`);
 		} catch (error) {
 			console.error('Error creating pack:', error);
 		} finally {

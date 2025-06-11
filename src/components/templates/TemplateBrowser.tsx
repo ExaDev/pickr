@@ -90,7 +90,7 @@ export function TemplateBrowser({
 			if (onSelectTemplate) {
 				onSelectTemplate(template);
 			} else {
-				router.push(`/rank/${newPack.id}`);
+				router.push(`/rank?packId=${newPack.id}`);
 			}
 		} catch (error) {
 			console.error('Failed to create pack from template:', error);

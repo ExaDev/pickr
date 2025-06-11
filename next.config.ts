@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	// Temporarily disable static export for development and testing
-	// output: 'export',
+	// Enable static export for client-side only build
+	output: 'export',
 
-	// Static export optimizations (disabled for dev)
-	// trailingSlash: true,
-	// skipTrailingSlashRedirect: true,
+	// Static export optimizations
+	trailingSlash: true,
+	skipTrailingSlashRedirect: true,
 	images: {
 		unoptimized: true,
 	},
