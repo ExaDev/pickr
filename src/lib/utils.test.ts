@@ -100,7 +100,7 @@ describe('Utils', () => {
 		});
 
 		it('should use custom suffix', () => {
-			expect(truncate('Long text', 5, '---')).toBe('L---');
+			expect(truncate('Long text', 5, '---')).toBe('Lo---');
 		});
 	});
 

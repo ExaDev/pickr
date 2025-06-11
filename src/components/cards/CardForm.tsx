@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import {
-	ImageStorage,
 	generateThumbnail,
 	processImage,
+	storeImage,
 	validateImageFile,
 } from '../../lib/image-utils';
 import { generateId } from '../../lib/utils';
@@ -88,7 +88,7 @@ export function CardForm({
 
 				// Store image with unique ID
 				const imageId = generateId();
-				await ImageStorage.storeImage(imageId, processed.dataUrl);
+				await storeImage(imageId, processed.dataUrl);
 				imageUrl = processed.dataUrl;
 			}
 
