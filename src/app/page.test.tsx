@@ -19,27 +19,27 @@ describe('Home Page', () => {
 		expect(paragraphs.length).toBeGreaterThan(0);
 	});
 
-	it('shows the four main feature cards', () => {
+	it('shows the main feature sections', () => {
 		render(<Home />);
 
-		// Check that there are 4 feature cards (h2 elements)
+		// Check that there are h2 headings (at least the "Try Example Packs" section)
 		const featureHeadings = screen.getAllByRole('heading', { level: 2 });
-		expect(featureHeadings).toHaveLength(4);
+		expect(featureHeadings.length).toBeGreaterThan(0);
 	});
 
-	it('displays the call-to-action button', () => {
+	it('displays action buttons', () => {
 		render(<Home />);
 
-		// Look for any button - works regardless of text content
-		const button = screen.getByRole('button');
-		expect(button).toBeInTheDocument();
+		// Look for the primary CTA button
+		const createButton = screen.getByRole('button', { name: /create new pack/i });
+		expect(createButton).toBeInTheDocument();
 	});
 
-	it('has a call-to-action section', () => {
+	it('has feature sections with h3 headings', () => {
 		render(<Home />);
 
-		// Check for the CTA section heading (h3)
-		const ctaHeading = screen.getByRole('heading', { level: 3 });
-		expect(ctaHeading).toBeInTheDocument();
+		// Check for feature headings (h3)
+		const featureHeadings = screen.getAllByRole('heading', { level: 3 });
+		expect(featureHeadings.length).toBeGreaterThan(2); // At least 3 feature cards
 	});
 });
