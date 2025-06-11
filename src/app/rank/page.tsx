@@ -53,12 +53,16 @@ function RankingPageContent() {
 
 	// Generate next comparison
 	const generateNextComparison = () => {
-		if (!pack || !currentSession) return;
+		if (!pack) return;
+
+		// Always get the most up-to-date session state
+		const latestSession = useRankingStore.getState().currentSession;
+		if (!latestSession) return;
 
 		const nextCards = getNextComparison(
 			pack.cards,
-			currentSession.comparisons,
-			currentSession.settings
+			latestSession.comparisons,
+			latestSession.settings
 		);
 
 		if (nextCards) {
@@ -76,29 +80,20 @@ function RankingPageContent() {
 
 	// Handle comparison selection
 	const handleComparisonSelect = (winner: Card) => {
-		if (!currentComparison || !currentSession) return;
+		if (!currentComparison || !currentSession || !pack) return;
 
-		const completedComparison = {
-			...currentComparison,
-			winner,
-			timestamp: new Date(),
-		};
+		// Submit the comparison with the current comparison data
+		submitComparison(winner, currentComparison);
 
-		// Add to session
-		submitComparison(winner);
+		// Get the updated session state after submission
+		const updatedSession = useRankingStore.getState().currentSession;
+		if (!updatedSession) return;
 
 		// Update current rankings
 		updateCurrentRankings();
 
-		// Check if complete
-		if (
-			pack &&
-			isRankingComplete(
-				pack.cards,
-				[...currentSession.comparisons, completedComparison],
-				currentSession.settings
-			)
-		) {
+		// Check if complete using the updated session comparisons
+		if (isRankingComplete(pack.cards, updatedSession.comparisons, updatedSession.settings)) {
 			completeRanking();
 		} else {
 			generateNextComparison();
@@ -107,24 +102,32 @@ function RankingPageContent() {
 
 	// Update current rankings based on completed comparisons
 	const updateCurrentRankings = () => {
-		if (!pack || !currentSession) return;
+		if (!pack) return;
+
+		// Always get the most up-to-date session state
+		const latestSession = useRankingStore.getState().currentSession;
+		if (!latestSession) return;
 
 		const currentRankings = calculateFinalRankings(
 			pack.cards,
-			currentSession.comparisons,
-			currentSession.settings
+			latestSession.comparisons,
+			latestSession.settings
 		);
 		setRankings(currentRankings);
 	};
 
 	// Complete the ranking session
 	const completeRanking = () => {
-		if (!pack || !currentSession) return;
+		if (!pack) return;
+
+		// Always get the most up-to-date session state
+		const latestSession = useRankingStore.getState().currentSession;
+		if (!latestSession) return;
 
 		const finalRankings = calculateFinalRankings(
 			pack.cards,
-			currentSession.comparisons,
-			currentSession.settings
+			latestSession.comparisons,
+			latestSession.settings
 		);
 
 		setRankings(finalRankings);
