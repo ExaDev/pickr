@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useRankingStore, useResultsStore } from '../../../store';
@@ -13,12 +13,13 @@ import { formatDate, formatDuration } from '../../../lib/utils';
 import type { RankingSession, RankingResult, PacoData } from '../../../types';
 
 interface ResultsPageProps {
-	params: {
+	params: Promise<{
 		sessionId: string;
-	};
+	}>;
 }
 
 export default function ResultsPage({ params }: ResultsPageProps) {
+	const resolvedParams = use(params);
 	const router = useRouter();
 	const { getSessionById } = useRankingStore();
 	const { addResult, generatePacoCode } = useResultsStore();
@@ -30,7 +31,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 	const [showShareModal, setShowShareModal] = useState(false);
 
 	useEffect(() => {
-		const sessionData = getSessionById(params.sessionId);
+		const sessionData = getSessionById(resolvedParams.sessionId);
 		if (!sessionData) {
 			router.push('/');
 			return;

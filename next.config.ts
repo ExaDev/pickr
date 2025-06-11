@@ -1,12 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	output: 'export',
+	// Temporarily disable static export for development and testing
+	// output: 'export',
 
-	// Static export optimizations
-	trailingSlash: true,
-	skipTrailingSlashRedirect: true,
+	// Static export optimizations (disabled for dev)
+	// trailingSlash: true,
+	// skipTrailingSlashRedirect: true,
 	images: {
-		unoptimized: true, // Required for static export
+		unoptimized: true,
 	},
 
 	// WebAssembly and LLM support

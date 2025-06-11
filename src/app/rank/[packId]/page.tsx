@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCardsStore, useRankingStore } from '../../../store';
 import { SwipeComparisonView } from '../../../components/ranking/SwipeComparisonView';
@@ -10,17 +10,18 @@ import { generateNextComparison as getNextComparison, calculateProgress, isRanki
 import type { Card, Comparison } from '../../../types';
 
 interface RankingPageProps {
-	params: {
+	params: Promise<{
 		packId: string;
-	};
+	}>;
 }
 
 export default function RankingPage({ params }: RankingPageProps) {
+	const resolvedParams = use(params);
 	const router = useRouter();
 	const { getPackById } = useCardsStore();
 	const { currentSession, startSession, submitComparison, endSession } = useRankingStore();
 	
-	const [pack, setPack] = useState(useCardsStore.getState().getPackById(params.packId));
+	const [pack, setPack] = useState(useCardsStore.getState().getPackById(resolvedParams.packId));
 	const [currentComparison, setCurrentComparison] = useState<Comparison | null>(null);
 	const [rankings, setRankings] = useState<any[]>([]);
 	const [isComplete, setIsComplete] = useState(false);
@@ -33,16 +34,16 @@ export default function RankingPage({ params }: RankingPageProps) {
 			return;
 		}
 
-		if (!currentSession || currentSession.packId !== params.packId) {
+		if (!currentSession || currentSession.packId !== resolvedParams.packId) {
 			const session = startSession({
-				packId: params.packId,
+				packId: resolvedParams.packId,
 				settings: getDefaultRankingSettings(),
 			});
 			
 			// Generate first comparison
 			generateNextComparison();
 		}
-	}, [pack, params.packId]);
+	}, [pack, resolvedParams.packId]);
 
 	// Generate next comparison
 	const generateNextComparison = () => {
