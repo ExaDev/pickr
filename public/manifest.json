@@ -1,0 +1,118 @@
+{
+	"name": "Pickr - Pairwise Ranking Tool",
+	"short_name": "Pickr",
+	"description": "Make better decisions through pairwise comparisons. Rank anything from movies to restaurants to ideas.",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#ffffff",
+	"theme_color": "#000000",
+	"orientation": "portrait-primary",
+	"scope": "/",
+	"lang": "en",
+	"categories": ["productivity", "utilities", "lifestyle"],
+	"screenshots": [
+		{
+			"src": "/screenshot-wide.png",
+			"sizes": "1280x720",
+			"type": "image/png",
+			"form_factor": "wide",
+			"label": "Pickr ranking interface on desktop"
+		},
+		{
+			"src": "/screenshot-narrow.png",
+			"sizes": "640x1136",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "Pickr ranking interface on mobile"
+		}
+	],
+	"icons": [
+		{
+			"src": "/icon-72.svg",
+			"sizes": "72x72",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-96.svg",
+			"sizes": "96x96",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-128.svg",
+			"sizes": "128x128",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-144.svg",
+			"sizes": "144x144",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-152.svg",
+			"sizes": "152x152",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-192.svg",
+			"sizes": "192x192",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		},
+		{
+			"src": "/icon-384.svg",
+			"sizes": "384x384",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon-512.svg",
+			"sizes": "512x512",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Create New Pack",
+			"short_name": "Create",
+			"description": "Create a new ranking pack",
+			"url": "/create",
+			"icons": [
+				{
+					"src": "/icon-192.svg",
+					"sizes": "192x192"
+				}
+			]
+		},
+		{
+			"name": "Compare Rankings",
+			"short_name": "Compare",
+			"description": "Compare multiple ranking results",
+			"url": "/compare",
+			"icons": [
+				{
+					"src": "/icon-192.svg",
+					"sizes": "192x192"
+				}
+			]
+		},
+		{
+			"name": "View Shared Results",
+			"short_name": "Shared",
+			"description": "View shared ranking results",
+			"url": "/results/shared",
+			"icons": [
+				{
+					"src": "/icon-192.png",
+					"sizes": "192x192"
+				}
+			]
+		}
+	],
+	"prefer_related_applications": false
+}
