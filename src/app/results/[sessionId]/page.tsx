@@ -47,10 +47,18 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 
 		// Create result if not exists
 		if (sessionData.isComplete) {
-			// Calculate final rankings (this should be done when session completes)
-			// For now, we'll recreate it here
+			// Extract unique cards from all comparisons
+			const allCards = new Map<string, Card>();
+			sessionData.comparisons.forEach(comparison => {
+				comparison.cards.forEach(card => {
+					allCards.set(card.id, card);
+				});
+			});
+			const cards = Array.from(allCards.values());
+
+			// Calculate final rankings
 			const finalRankings = calculateFinalRankings(
-				[], // We need pack data here - should be stored in session
+				cards,
 				sessionData.comparisons,
 				sessionData.settings
 			);

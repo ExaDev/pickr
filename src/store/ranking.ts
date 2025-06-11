@@ -1,33 +1,34 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { calculateProgress } from '../lib/ranking/utils';
 import type {
-	RankingSession,
-	RankingSessionInput,
+	Card,
 	Comparison,
 	ComparisonInput,
-	RankingSettings,
 	RankingProgress,
-	Card,
+	RankingSession,
+	RankingSessionInput,
+	RankingSettings,
 } from '../types';
 
 interface RankingState {
 	currentSession: RankingSession | null;
 	sessions: RankingSession[];
-	
+
 	// Session management
 	startSession: (input: RankingSessionInput) => RankingSession;
 	updateSession: (id: string, updates: Partial<RankingSession>) => void;
 	endSession: () => void;
 	getSessionById: (id: string) => RankingSession | undefined;
-	
+
 	// Comparison management
 	addComparison: (comparison: ComparisonInput) => void;
 	submitComparison: (winner: Card) => void;
 	setCurrentComparison: (comparison: Comparison | undefined) => void;
-	
+
 	// Progress tracking
 	getProgress: () => RankingProgress | null;
-	
+
 	// Utility functions
 	clearAllSessions: () => void;
 }
@@ -50,7 +51,7 @@ export const useRankingStore = create<RankingState>()(
 					updatedAt: new Date(),
 				};
 
-				set((state) => ({
+				set(state => ({
 					currentSession: newSession,
 					sessions: [...state.sessions, newSession],
 				}));
@@ -59,11 +60,9 @@ export const useRankingStore = create<RankingState>()(
 			},
 
 			updateSession: (id: string, updates: Partial<RankingSession>) => {
-				set((state) => {
-					const updatedSessions = state.sessions.map((session) =>
-						session.id === id
-							? { ...session, ...updates, updatedAt: new Date() }
-							: session
+				set(state => {
+					const updatedSessions = state.sessions.map(session =>
+						session.id === id ? { ...session, ...updates, updatedAt: new Date() } : session
 					);
 
 					return {
@@ -79,8 +78,8 @@ export const useRankingStore = create<RankingState>()(
 			endSession: () => {
 				const { currentSession } = get();
 				if (currentSession) {
-					set((state) => ({
-						sessions: state.sessions.map((session) =>
+					set(state => ({
+						sessions: state.sessions.map(session =>
 							session.id === currentSession.id
 								? { ...session, isComplete: true, updatedAt: new Date() }
 								: session
@@ -91,7 +90,7 @@ export const useRankingStore = create<RankingState>()(
 			},
 
 			getSessionById: (id: string) => {
-				return get().sessions.find((session) => session.id === id);
+				return get().sessions.find(session => session.id === id);
 			},
 
 			addComparison: (comparisonInput: ComparisonInput) => {
@@ -109,9 +108,9 @@ export const useRankingStore = create<RankingState>()(
 						updatedAt: new Date(),
 					};
 
-					set((state) => ({
+					set(state => ({
 						currentSession: updatedSession,
-						sessions: state.sessions.map((session) =>
+						sessions: state.sessions.map(session =>
 							session.id === currentSession.id ? updatedSession : session
 						),
 					}));
@@ -135,9 +134,9 @@ export const useRankingStore = create<RankingState>()(
 						updatedAt: new Date(),
 					};
 
-					set((state) => ({
+					set(state => ({
 						currentSession: updatedSession,
-						sessions: state.sessions.map((session) =>
+						sessions: state.sessions.map(session =>
 							session.id === currentSession.id ? updatedSession : session
 						),
 					}));
@@ -153,9 +152,9 @@ export const useRankingStore = create<RankingState>()(
 						updatedAt: new Date(),
 					};
 
-					set((state) => ({
+					set(state => ({
 						currentSession: updatedSession,
-						sessions: state.sessions.map((session) =>
+						sessions: state.sessions.map(session =>
 							session.id === currentSession.id ? updatedSession : session
 						),
 					}));
@@ -166,15 +165,18 @@ export const useRankingStore = create<RankingState>()(
 				const { currentSession } = get();
 				if (!currentSession) return null;
 
+				// We need the pack cards to calculate proper progress
+				// This will be called from components that have access to the pack
+				// For now, return a basic calculation
 				const totalComparisons = currentSession.comparisons.length;
-				const estimatedTotal = Math.ceil(
-					Math.log2(currentSession.settings.comparisonSize || 2) * 10 // Rough estimate
-				);
 
 				return {
-					totalComparisons: estimatedTotal,
+					totalComparisons: totalComparisons + 1, // At least one more
 					completedComparisons: totalComparisons,
-					percentComplete: Math.min((totalComparisons / estimatedTotal) * 100, 100),
+					percentComplete:
+						totalComparisons > 0
+							? Math.min((totalComparisons / (totalComparisons + 1)) * 100, 90)
+							: 0,
 				};
 			},
 
