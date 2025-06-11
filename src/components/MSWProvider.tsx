@@ -13,18 +13,41 @@ export default function MSWProvider({ children }: MSWProviderProps) {
 		const initMSW = async () => {
 			if (process.env.NODE_ENV === 'development') {
 				try {
-					const { startMSW } = await import('../mocks/browser');
-					await startMSW();
+					// Add timeout to prevent hanging
+					const timeoutPromise = new Promise((_, reject) =>
+						setTimeout(() => reject(new Error('MSW initialization timeout')), 10000)
+					);
+
+					// Dynamic import to avoid SSR issues
+					const { worker } = await import('../mocks/browser');
+
+					// Start the worker with proper configuration and timeout
+					await Promise.race([
+						worker.start({
+							onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
+							serviceWorker: {
+								url: '/mockServiceWorker.js',
+							},
+							waitUntilReady: true, // Wait for service worker to be ready
+						}),
+						timeoutPromise,
+					]);
+
+					console.log('🔶 MSW: Mock Service Worker started successfully');
 					setIsMSWReady(true);
 				} catch (error) {
-					console.error('Failed to initialize MSW:', error);
-					setIsMSWReady(true); // Continue even if MSW fails
+					console.error('❌ MSW: Failed to start Mock Service Worker:', error);
+					console.log('⚠️ MSW: Continuing without mocks to prevent app blocking');
+					// Continue even if MSW fails to avoid blocking the app
+					setIsMSWReady(true);
 				}
 			} else {
+				// In production, skip MSW initialization
 				setIsMSWReady(true);
 			}
 		};
 
+		// Initialize MSW asynchronously
 		initMSW();
 	}, []);
 
