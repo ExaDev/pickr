@@ -1,70 +1,69 @@
-import type { AssessmentResult } from '@/types';
 import { describe, expect, it, vi } from 'vitest';
 import {
-	calculateAssessmentScore,
-	checkWebGPUSupport,
+	capitalize,
+	cn,
+	debounce,
+	formatDate,
 	formatDuration,
+	formatRelativeTime,
 	generateId,
-	identifyKnowledgeGaps,
+	isBrowser,
+	isEmpty,
+	safeJsonParse,
+	throttle,
+	truncate,
 } from './utils';
 
 describe('Utils', () => {
-	describe('calculateAssessmentScore', () => {
-		it('should return 0 for empty results', () => {
-			expect(calculateAssessmentScore([])).toBe(0);
+	describe('cn (className merger)', () => {
+		it('should merge tailwind classes correctly', () => {
+			expect(cn('px-2 py-1', 'px-3')).toBe('py-1 px-3');
+			expect(cn('text-red-500', 'text-blue-500')).toBe('text-blue-500');
 		});
 
-		it('should calculate correct percentage for mixed results', () => {
-			const results: AssessmentResult[] = [
-				{ questionId: '1', selectedAnswer: 0, isCorrect: true, timeSpent: 30 },
-				{ questionId: '2', selectedAnswer: 1, isCorrect: false, timeSpent: 45 },
-				{ questionId: '3', selectedAnswer: 2, isCorrect: true, timeSpent: 25 },
-				{ questionId: '4', selectedAnswer: 0, isCorrect: true, timeSpent: 35 },
-			];
-
-			expect(calculateAssessmentScore(results)).toBe(75);
-		});
-
-		it('should return 100 for all correct answers', () => {
-			const results: AssessmentResult[] = [
-				{ questionId: '1', selectedAnswer: 0, isCorrect: true, timeSpent: 30 },
-				{ questionId: '2', selectedAnswer: 1, isCorrect: true, timeSpent: 45 },
-			];
-
-			expect(calculateAssessmentScore(results)).toBe(100);
+		it('should handle conditional classes', () => {
+			expect(cn('base-class', true && 'conditional-class', false && 'hidden-class')).toBe(
+				'base-class conditional-class'
+			);
 		});
 	});
 
-	describe('identifyKnowledgeGaps', () => {
-		it('should identify gaps for low-performing topics', () => {
-			const results: AssessmentResult[] = [
-				{ questionId: '1', selectedAnswer: 0, isCorrect: false, timeSpent: 30 },
-				{ questionId: '2', selectedAnswer: 1, isCorrect: false, timeSpent: 45 },
-			];
-			const topics = ['React Hooks', 'State Management'];
+	describe('generateId', () => {
+		it('should generate unique IDs', () => {
+			const id1 = generateId();
+			const id2 = generateId();
 
-			const gaps = identifyKnowledgeGaps(results, topics);
+			expect(id1).not.toBe(id2);
+			expect(typeof id1).toBe('string');
+			expect(id1.length).toBeGreaterThan(0);
+		});
+	});
 
-			expect(gaps.length).toBeGreaterThan(0);
-			gaps.forEach(gap => {
-				expect(gap.confidence).toBeLessThan(0.7);
-				expect(['beginner', 'intermediate', 'advanced']).toContain(gap.level);
-			});
+	describe('formatDate', () => {
+		it('should format dates correctly', () => {
+			const date = new Date('2024-01-15T14:30:00Z');
+			const formatted = formatDate(date);
+
+			expect(typeof formatted).toBe('string');
+			expect(formatted).toContain('15');
+			expect(formatted).toContain('Jan');
+			expect(formatted).toContain('2024');
+		});
+	});
+
+	describe('formatRelativeTime', () => {
+		it('should format recent times correctly', () => {
+			const now = new Date();
+			const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+			const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+			expect(formatRelativeTime(fiveMinutesAgo)).toBe('5 minutes ago');
+			expect(formatRelativeTime(oneHourAgo)).toBe('1 hour ago');
 		});
 
-		it('should return empty array for strong performance', () => {
-			// Note: This test might be flaky due to random topic assignment
-			// In a real implementation, we'd have proper question-topic mapping
-			const results: AssessmentResult[] = [
-				{ questionId: '1', selectedAnswer: 0, isCorrect: true, timeSpent: 30 },
-				{ questionId: '2', selectedAnswer: 1, isCorrect: true, timeSpent: 45 },
-			];
-			const topics = ['React Hooks'];
-
-			const gaps = identifyKnowledgeGaps(results, topics);
-
-			// This test acknowledges the simplified implementation
-			expect(Array.isArray(gaps)).toBe(true);
+		it('should handle just now correctly', () => {
+			const now = new Date();
+			expect(formatRelativeTime(now)).toBe('Just now');
 		});
 	});
 
@@ -85,57 +84,92 @@ describe('Utils', () => {
 		});
 	});
 
-	describe('generateId', () => {
-		it('should generate unique IDs', () => {
-			const id1 = generateId();
-			const id2 = generateId();
-
-			expect(id1).not.toBe(id2);
-			expect(typeof id1).toBe('string');
-			expect(id1.length).toBeGreaterThan(0);
+	describe('capitalize', () => {
+		it('should capitalize first letter', () => {
+			expect(capitalize('hello')).toBe('Hello');
+			expect(capitalize('WORLD')).toBe('WORLD');
+			expect(capitalize('')).toBe('');
 		});
 	});
 
-	describe('checkWebGPUSupport', () => {
-		it('should return false when navigator.gpu is not available', async () => {
-			// Mock navigator without gpu
-			vi.stubGlobal('navigator', {});
-
-			const support = await checkWebGPUSupport();
-
-			expect(support).toBe(false);
-
-			vi.unstubAllGlobals();
+	describe('truncate', () => {
+		it('should truncate long text', () => {
+			expect(truncate('This is a long text', 10)).toBe('This is...');
+			expect(truncate('Short', 10)).toBe('Short');
+			expect(truncate('Exact length', 12)).toBe('Exact length');
 		});
 
-		it('should return false when requestAdapter fails', async () => {
-			// Mock navigator with gpu that fails
-			vi.stubGlobal('navigator', {
-				gpu: {
-					requestAdapter: vi.fn().mockRejectedValue(new Error('WebGPU not supported')),
-				},
-			});
+		it('should use custom suffix', () => {
+			expect(truncate('Long text', 5, '---')).toBe('L---');
+		});
+	});
 
-			const support = await checkWebGPUSupport();
-
-			expect(support).toBe(false);
-
-			vi.unstubAllGlobals();
+	describe('isEmpty', () => {
+		it('should detect empty values', () => {
+			expect(isEmpty(null)).toBe(true);
+			expect(isEmpty(undefined)).toBe(true);
+			expect(isEmpty('')).toBe(true);
+			expect(isEmpty('   ')).toBe(true);
+			expect(isEmpty([])).toBe(true);
+			expect(isEmpty({})).toBe(true);
 		});
 
-		it('should return true when WebGPU adapter is available', async () => {
-			// Mock successful WebGPU support
-			vi.stubGlobal('navigator', {
-				gpu: {
-					requestAdapter: vi.fn().mockResolvedValue({}),
-				},
-			});
+		it('should detect non-empty values', () => {
+			expect(isEmpty('hello')).toBe(false);
+			expect(isEmpty([1, 2])).toBe(false);
+			expect(isEmpty({ key: 'value' })).toBe(false);
+			expect(isEmpty(0)).toBe(false);
+			expect(isEmpty(false)).toBe(false);
+		});
+	});
 
-			const support = await checkWebGPUSupport();
+	describe('safeJsonParse', () => {
+		it('should parse valid JSON', () => {
+			expect(safeJsonParse('{"key": "value"}', {})).toEqual({ key: 'value' });
+		});
 
-			expect(support).toBe(true);
+		it('should return fallback for invalid JSON', () => {
+			expect(safeJsonParse('invalid json', { default: true })).toEqual({ default: true });
+		});
+	});
 
-			vi.unstubAllGlobals();
+	describe('isBrowser', () => {
+		it('should detect browser environment', () => {
+			// In test environment, window is available through jsdom
+			expect(typeof isBrowser()).toBe('boolean');
+		});
+	});
+
+	describe('debounce', () => {
+		it('should debounce function calls', async () => {
+			const mockFn = vi.fn();
+			const debouncedFn = debounce(mockFn, 100);
+
+			debouncedFn();
+			debouncedFn();
+			debouncedFn();
+
+			expect(mockFn).not.toHaveBeenCalled();
+
+			await new Promise(resolve => setTimeout(resolve, 150));
+			expect(mockFn).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('throttle', () => {
+		it('should throttle function calls', async () => {
+			const mockFn = vi.fn();
+			const throttledFn = throttle(mockFn, 100);
+
+			throttledFn();
+			throttledFn();
+			throttledFn();
+
+			expect(mockFn).toHaveBeenCalledTimes(1);
+
+			await new Promise(resolve => setTimeout(resolve, 150));
+			throttledFn();
+			expect(mockFn).toHaveBeenCalledTimes(2);
 		});
 	});
 });

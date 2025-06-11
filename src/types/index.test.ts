@@ -1,99 +1,114 @@
 import { describe, expect, it } from 'vitest';
 import type {
-	AssessmentQuestion,
-	AssessmentResult,
-	CourseModule,
-	KnowledgeGap,
-	LearningPath,
-	UserProfile,
+	Card,
+	CardInput,
+	Comparison,
+	Pack,
+	PackInput,
+	RankingResult,
+	RankingSession,
+	ResultSummary,
 } from './index';
 
 describe('Type Definitions', () => {
-	describe('AssessmentQuestion', () => {
-		it('should accept valid assessment question structure', () => {
-			const question: AssessmentQuestion = {
-				id: 'react-hooks-1',
-				question: 'What is the primary purpose of useState hook?',
-				options: [
-					'To handle side effects',
-					'To manage component state',
-					'To optimize performance',
-					'To handle routing',
-				],
-				correctAnswer: 1,
-				topic: 'React Hooks',
-				difficulty: 'beginner',
-				explanation: 'useState is used to add state to functional components',
+	describe('Card', () => {
+		it('should accept valid card structure', () => {
+			const card: Card = {
+				id: 'card-123',
+				content: 'Favorite Pizza Topping',
+				imageUrl: 'https://example.com/pizza.jpg',
+				createdAt: new Date(),
 			};
 
-			expect(question.id).toBe('react-hooks-1');
-			expect(question.options).toHaveLength(4);
-			expect(question.difficulty).toBe('beginner');
+			expect(card.id).toBe('card-123');
+			expect(card.content).toBe('Favorite Pizza Topping');
+			expect(card.imageUrl).toBe('https://example.com/pizza.jpg');
+			expect(card.createdAt).toBeInstanceOf(Date);
+		});
+
+		it('should accept card without optional fields', () => {
+			const card: Card = {
+				id: 'card-456',
+				content: 'Simple card content',
+				createdAt: new Date(),
+			};
+
+			expect(card.imageUrl).toBeUndefined();
+			expect(card.imageFile).toBeUndefined();
 		});
 	});
 
-	describe('KnowledgeGap', () => {
-		it('should accept valid knowledge gap structure', () => {
-			const gap: KnowledgeGap = {
-				topic: 'React Hooks',
-				level: 'intermediate',
-				confidence: 0.3,
-				subtopics: ['useEffect', 'useContext', 'useReducer'],
-			};
-
-			expect(gap.confidence).toBeGreaterThanOrEqual(0);
-			expect(gap.confidence).toBeLessThanOrEqual(1);
-			expect(gap.subtopics).toContain('useEffect');
-		});
-	});
-
-	describe('CourseModule', () => {
-		it('should accept valid course module structure', () => {
-			const module: CourseModule = {
-				id: 'react-hooks-basics',
-				title: 'Introduction to React Hooks',
-				description: 'Learn the fundamentals of React Hooks',
-				estimatedDuration: 45,
-				prerequisites: ['javascript-basics'],
-				content: 'Detailed explanation of React Hooks...',
-				examples: [
+	describe('Pack', () => {
+		it('should accept valid pack structure', () => {
+			const pack: Pack = {
+				id: 'pack-123',
+				name: 'Movie Rankings',
+				description: 'Rank your favorite movies',
+				cards: [
 					{
-						id: 'useState-example',
-						title: 'Counter with useState',
-						code: 'const [count, setCount] = useState(0);',
-						language: 'javascript',
-						explanation: 'Basic useState example',
+						id: 'card-1',
+						content: 'The Matrix',
+						createdAt: new Date(),
+					},
+					{
+						id: 'card-2',
+						content: 'Inception',
+						createdAt: new Date(),
 					},
 				],
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			};
 
-			expect(module.estimatedDuration).toBeGreaterThan(0);
-			expect(module.examples).toHaveLength(1);
-			expect(module.examples[0].language).toBe('javascript');
+			expect(pack.name).toBe('Movie Rankings');
+			expect(pack.cards).toHaveLength(2);
+			expect(pack.cards[0].content).toBe('The Matrix');
 		});
 	});
 
-	describe('UserProfile', () => {
-		it('should accept valid user profile structure', () => {
-			const profile: UserProfile = {
-				id: 'user-123',
-				name: 'Test User',
-				email: 'test@example.com',
-				preferences: {
-					learningStyle: 'visual',
-					difficulty: 'intermediate',
-					topics: ['react', 'typescript'],
-				},
-				progress: {
-					assessmentsCompleted: 3,
-					modulesCompleted: 5,
-					totalStudyTime: 120,
-				},
+	describe('RankingSession', () => {
+		it('should accept valid ranking session structure', () => {
+			const session: RankingSession = {
+				id: 'session-123',
+				packId: 'pack-456',
+				comparisons: [
+					{
+						id: 'comp-1',
+						cardIds: ['card-1', 'card-2'],
+						winnerId: 'card-1',
+						timestamp: Date.now(),
+					},
+				],
+				isComplete: false,
+				startedAt: Date.now(),
 			};
 
-			expect(profile.preferences.learningStyle).toBe('visual');
-			expect(profile.progress.totalStudyTime).toBeGreaterThan(0);
-			expect(profile.preferences.topics).toContain('react');
+			expect(session.packId).toBe('pack-456');
+			expect(session.comparisons).toHaveLength(1);
+			expect(session.isComplete).toBe(false);
+			expect(session.comparisons[0].winnerId).toBe('card-1');
+		});
+	});
+
+	describe('RankingResult', () => {
+		it('should accept valid ranking result structure', () => {
+			const result: RankingResult = {
+				id: 'result-123',
+				sessionId: 'session-456',
+				packId: 'pack-789',
+				rankings: [
+					{ cardId: 'card-1', rank: 1, score: 0.85 },
+					{ cardId: 'card-2', rank: 2, score: 0.73 },
+				],
+				completedAt: Date.now(),
+				totalComparisons: 5,
+				timeSpent: 120,
+			};
+
+			expect(result.rankings).toHaveLength(2);
+			expect(result.rankings[0].rank).toBe(1);
+			expect(result.rankings[0].score).toBe(0.85);
+			expect(result.totalComparisons).toBe(5);
 		});
 	});
 });
