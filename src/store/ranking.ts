@@ -23,7 +23,7 @@ interface RankingState {
 
 	// Comparison management
 	addComparison: (comparison: ComparisonInput) => void;
-	submitComparison: (winner: Card) => void;
+	submitComparison: (winner: Card, comparison?: Comparison) => void;
 	setCurrentComparison: (comparison: Comparison | undefined) => void;
 
 	// Progress tracking
@@ -117,30 +117,34 @@ export const useRankingStore = create<RankingState>()(
 				}
 			},
 
-			submitComparison: (winner: Card) => {
+			submitComparison: (winner: Card, comparison?: Comparison) => {
 				const { currentSession } = get();
-				if (currentSession?.currentComparison) {
-					const completedComparison: Comparison = {
-						...currentSession.currentComparison,
-						winner,
-						timestamp: new Date(),
-					};
+				if (!currentSession) return;
 
-					// Add to comparisons and clear current
-					const updatedSession = {
-						...currentSession,
-						comparisons: [...currentSession.comparisons, completedComparison],
-						currentComparison: undefined,
-						updatedAt: new Date(),
-					};
+				// Use provided comparison or the session's current comparison
+				const comparisonToComplete = comparison || currentSession.currentComparison;
+				if (!comparisonToComplete) return;
 
-					set(state => ({
-						currentSession: updatedSession,
-						sessions: state.sessions.map(session =>
-							session.id === currentSession.id ? updatedSession : session
-						),
-					}));
-				}
+				const completedComparison: Comparison = {
+					...comparisonToComplete,
+					winner,
+					timestamp: new Date(),
+				};
+
+				// Add to comparisons and clear current
+				const updatedSession = {
+					...currentSession,
+					comparisons: [...currentSession.comparisons, completedComparison],
+					currentComparison: undefined,
+					updatedAt: new Date(),
+				};
+
+				set(state => ({
+					currentSession: updatedSession,
+					sessions: state.sessions.map(session =>
+						session.id === currentSession.id ? updatedSession : session
+					),
+				}));
 			},
 
 			setCurrentComparison: (comparison: Comparison | undefined) => {
