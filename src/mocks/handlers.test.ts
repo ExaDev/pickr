@@ -2,83 +2,94 @@ import { http, HttpResponse } from 'msw';
 import { server } from './node';
 
 describe('MSW Handlers', () => {
-	describe('LLM API endpoints', () => {
-		it('should mock LLM chat endpoint', async () => {
-			const response = await fetch('/api/llm/chat', {
+	describe('Ranking API endpoints', () => {
+		it('should mock ranking result sharing', async () => {
+			const rankingData = {
+				id: 'ranking-123',
+				packId: 'pack-456',
+				rankings: [{ cardId: 'card-1', rank: 1, score: 0.85 }],
+				comparisons: [{ cardIds: ['card-1', 'card-2'], winnerId: 'card-1', timestamp: Date.now() }],
+				metadata: { completedAt: Date.now(), totalComparisons: 3, timeSpent: 180 },
+			};
+
+			const response = await fetch('/api/rankings/share', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({
-					messages: [{ role: 'user', content: 'Hello, AI!' }],
-				}),
+				body: JSON.stringify(rankingData),
 			});
 
 			expect(response.ok).toBe(true);
 
 			const data = await response.json();
-			expect(data).toHaveProperty('id');
-			expect(data).toHaveProperty('model', 'mock-llm-model');
-			expect(data.choices[0].message.content).toContain('Mock response to: Hello, AI!');
+			expect(data).toHaveProperty('shareId');
+			expect(data).toHaveProperty('url');
+			expect(data.shareId).toMatch(/^ranking-\d+-[a-z0-9]+$/);
+		});
+
+		it('should mock shared ranking retrieval', async () => {
+			const response = await fetch('/api/rankings/shared/test-id');
+
+			expect(response.ok).toBe(true);
+
+			const data = await response.json();
+			expect(data).toHaveProperty('id', 'test-id');
+			expect(data).toHaveProperty('packId');
+			expect(data.rankings).toHaveLength(3);
+			expect(data.comparisons).toHaveLength(3);
 		});
 
 		it('should handle error scenarios', async () => {
-			const response = await fetch('/api/llm/error-test', {
+			const response = await fetch('/api/rankings/error-test', {
 				method: 'POST',
 			});
 
 			expect(response.status).toBe(500);
 
 			const data = await response.json();
-			expect(data).toHaveProperty('error', 'Mock API error for testing');
+			expect(data).toHaveProperty('error', 'Mock ranking API error for testing');
 		});
 	});
 
-	describe('Assessment endpoints', () => {
-		it('should mock assessment question generation', async () => {
-			const response = await fetch('/api/assessment/generate', {
+	describe('Pack sharing endpoints', () => {
+		it('should mock pack sharing', async () => {
+			const packData = {
+				id: 'pack-123',
+				title: 'Test Pack',
+				description: 'A test card pack',
+				cards: [{ id: 'card-1', title: 'Card 1' }],
+				metadata: { createdAt: Date.now(), version: 1 },
+			};
+
+			const response = await fetch('/api/packs/share', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({
-					topic: 'React Hooks',
-				}),
+				body: JSON.stringify(packData),
 			});
 
 			expect(response.ok).toBe(true);
 
 			const data = await response.json();
-			expect(data.question).toHaveProperty('id');
-			expect(data.question).toHaveProperty('type', 'multiple-choice');
-			expect(data.question.question).toContain('React Hooks');
-			expect(data.question.options).toHaveLength(4);
-			expect(data.question.correctAnswer).toBe(0);
+			expect(data).toHaveProperty('shareId');
+			expect(data).toHaveProperty('url');
+			expect(data.shareId).toMatch(/^pack-\d+-[a-z0-9]+$/);
 		});
 	});
 
-	describe('Course generation', () => {
-		it('should mock course generation endpoint', async () => {
-			const knowledgeGaps = [
-				{ topic: 'Hooks', level: 'beginner' },
-				{ topic: 'State Management', level: 'intermediate' },
-			];
-
-			const response = await fetch('/api/course/generate', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ knowledgeGaps }),
-			});
+	describe('Analytics endpoints', () => {
+		it('should mock pack analytics retrieval', async () => {
+			const response = await fetch('/api/analytics/packs/pack-123');
 
 			expect(response.ok).toBe(true);
 
 			const data = await response.json();
-			expect(data.course).toHaveProperty('id');
-			expect(data.course).toHaveProperty('title');
-			expect(data.course.modules).toHaveLength(2);
-			expect(data.course.estimatedDuration).toBe(240);
+			expect(data).toHaveProperty('packId', 'pack-123');
+			expect(data).toHaveProperty('totalRankings', 47);
+			expect(data).toHaveProperty('averageTime', 245);
+			expect(data.popularComparisons).toHaveLength(2);
 		});
 	});
 

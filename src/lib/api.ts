@@ -1,150 +1,114 @@
-// Generic API service functions that work with MSW mocks
-// Replace with your application-specific API functions
+// API service functions for card ranking application
+// Handles pack sharing, ranking data, and analytics
 
-interface ChatMessage {
-	role: 'user' | 'assistant' | 'system';
-	content: string;
-}
-
-interface LLMResponse {
+interface RankingResult {
 	id: string;
-	model: string;
-	choices: Array<{
-		message: ChatMessage;
-		finish_reason: string;
+	packId: string;
+	userId?: string;
+	rankings: Array<{
+		cardId: string;
+		rank: number;
+		score: number;
 	}>;
-	usage: {
-		prompt_tokens: number;
-		completion_tokens: number;
-		total_tokens: number;
+	comparisons: Array<{
+		cardIds: string[];
+		winnerId: string;
+		timestamp: number;
+	}>;
+	metadata: {
+		completedAt: number;
+		totalComparisons: number;
+		timeSpent: number; // seconds
 	};
 }
 
-interface AssessmentQuestion {
-	id: string;
-	type: 'multiple-choice' | 'open-ended' | 'code-completion';
-	question: string;
-	options?: string[];
-	correctAnswer?: number;
-	explanation: string;
-	difficulty: 'beginner' | 'intermediate' | 'advanced';
-	topic: string;
-	subtopics: string[];
-}
-
-interface CourseModule {
+interface SharedPack {
 	id: string;
 	title: string;
 	description: string;
-	duration: number;
-	lessons: Array<{
+	cards: Array<{
 		id: string;
 		title: string;
-		type: 'theory' | 'practical' | 'assessment';
-		content: string;
-		estimatedTime: number;
+		imageUrl?: string;
+	}>;
+	metadata: {
+		createdAt: number;
+		createdBy?: string;
+		version: number;
+	};
+}
+
+interface AnalyticsData {
+	packId: string;
+	totalRankings: number;
+	averageTime: number;
+	popularComparisons: Array<{
+		cardIds: string[];
+		winnerFrequency: Record<string, number>;
 	}>;
 }
 
-interface Course {
-	id: string;
-	title: string;
-	description: string;
-	estimatedDuration: number;
-	modules: CourseModule[];
-	prerequisites: string[];
-	learningObjectives: string[];
-}
-
 /**
- * Send a chat message to the LLM API
+ * Share a ranking result
  */
-export async function sendChatMessage(messages: ChatMessage[]): Promise<LLMResponse> {
-	const response = await fetch('/api/llm/chat', {
+export async function shareRankingResult(
+	result: RankingResult
+): Promise<{ shareId: string; url: string }> {
+	const response = await fetch('/api/rankings/share', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ messages }),
+		body: JSON.stringify(result),
 	});
 
 	if (!response.ok) {
-		throw new Error(`LLM API error: ${response.status}`);
+		throw new Error(`Ranking share error: ${response.status}`);
 	}
 
 	return response.json();
 }
 
 /**
- * Generate assessment questions for a specific topic
+ * Retrieve a shared ranking result
  */
-export async function generateAssessmentQuestion(
-	topic: string
-): Promise<{ question: AssessmentQuestion }> {
-	const response = await fetch('/api/assessment/generate', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ topic }),
-	});
+export async function getSharedRanking(shareId: string): Promise<RankingResult> {
+	const response = await fetch(`/api/rankings/shared/${shareId}`);
 
 	if (!response.ok) {
-		throw new Error(`Assessment API error: ${response.status}`);
+		throw new Error(`Failed to retrieve shared ranking: ${response.status}`);
 	}
 
 	return response.json();
 }
 
 /**
- * Generate a personalized course based on knowledge gaps
+ * Share a pack for others to rank
  */
-export async function generateCourse(
-	knowledgeGaps: Array<{ topic: string; level: string }>
-): Promise<{ course: Course }> {
-	const response = await fetch('/api/course/generate', {
+export async function sharePack(pack: SharedPack): Promise<{ shareId: string; url: string }> {
+	const response = await fetch('/api/packs/share', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ knowledgeGaps }),
+		body: JSON.stringify(pack),
 	});
 
 	if (!response.ok) {
-		throw new Error(`Course generation error: ${response.status}`);
+		throw new Error(`Pack share error: ${response.status}`);
 	}
 
 	return response.json();
 }
 
 /**
- * Update user progress
+ * Get analytics for a pack
  */
-export async function updateProgress(data: {
-	courseId: string;
-	completedLessons: string[];
-	currentModule: number;
-}): Promise<{
-	success: boolean;
-	progress: {
-		userId: string;
-		courseId: string;
-		completedLessons: string[];
-		currentModule: number;
-		overallProgress: number;
-		timeSpent: number;
-	};
-}> {
-	const response = await fetch('/api/progress/update', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data),
-	});
+export async function getPackAnalytics(packId: string): Promise<AnalyticsData> {
+	const response = await fetch(`/api/analytics/packs/${packId}`);
 
 	if (!response.ok) {
-		throw new Error(`Progress API error: ${response.status}`);
+		throw new Error(`Analytics fetch error: ${response.status}`);
 	}
 
 	return response.json();

@@ -1,162 +1,108 @@
 import { http, HttpResponse } from 'msw';
 
 // Type definitions for request bodies
-type ChatRequestBody = {
-	messages: Array<{ role: string; content: string }>;
+type RankingShareRequestBody = {
+	id: string;
+	packId: string;
+	rankings: Array<{ cardId: string; rank: number; score: number }>;
+	comparisons: Array<{ cardIds: string[]; winnerId: string; timestamp: number }>;
+	metadata: { completedAt: number; totalComparisons: number; timeSpent: number };
 };
 
-type AssessmentRequestBody = {
-	topic: string;
+type PackShareRequestBody = {
+	id: string;
+	title: string;
+	description: string;
+	cards: Array<{ id: string; title: string; imageUrl?: string }>;
+	metadata: { createdAt: number; createdBy?: string; version: number };
 };
 
-type CourseRequestBody = {
-	knowledgeGaps: Array<{ topic: string; level: string }>;
-};
-
-type ProgressRequestBody = {
-	courseId: string;
-	completedLessons: string[];
-	currentModule: number;
-};
-
-// Mock API handlers for development and testing
+// Mock API handlers for card ranking application
 export const handlers = [
-	// Mock LLM API endpoints
-	http.post('/api/llm/chat', async ({ request }) => {
+	// Mock ranking result sharing
+	http.post('/api/rankings/share', async ({ request }) => {
 		const body = await request.json();
-		const messages = (body as ChatRequestBody)?.messages || [];
+		const ranking = body as RankingShareRequestBody;
 
 		// Simulate processing delay
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise(resolve => setTimeout(resolve, 500));
+
+		const shareId = `ranking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 		return HttpResponse.json({
-			id: `mock-response-${Date.now()}`,
-			model: 'mock-llm-model',
-			choices: [
-				{
-					message: {
-						role: 'assistant',
-						content: `Mock response to: ${messages[messages.length - 1]?.content || 'Hello!'}`,
-					},
-					finish_reason: 'stop',
-				},
-			],
-			usage: {
-				prompt_tokens: 10,
-				completion_tokens: 20,
-				total_tokens: 30,
-			},
+			shareId,
+			url: `${window.location.origin}/results/shared?id=${shareId}`,
 		});
 	}),
 
-	// Mock assessment question generation
-	http.post('/api/assessment/generate', async ({ request }) => {
-		const body = await request.json();
-		const topic = (body as AssessmentRequestBody)?.topic || 'React';
-
-		await new Promise(resolve => setTimeout(resolve, 800));
-
-		return HttpResponse.json({
-			question: {
-				id: `mock-q-${Date.now()}`,
-				type: 'multiple-choice',
-				question: `What is the primary purpose of ${topic} hooks?`,
-				options: [
-					'To manage component state and lifecycle',
-					'To style components',
-					'To handle routing',
-					'To manage API calls only',
-				],
-				correctAnswer: 0,
-				explanation:
-					'Hooks allow you to use state and other React features in functional components.',
-				difficulty: 'intermediate',
-				topic: topic,
-				subtopics: ['hooks', 'state-management'],
-			},
-		});
-	}),
-
-	// Mock course generation
-	http.post('/api/course/generate', async ({ request }) => {
-		const body = await request.json();
-		const gaps = (body as CourseRequestBody)?.knowledgeGaps || [];
-
-		await new Promise(resolve => setTimeout(resolve, 1500));
-
-		return HttpResponse.json({
-			course: {
-				id: `mock-course-${Date.now()}`,
-				title: 'Personalized React Learning Path',
-				description: 'A course tailored to your specific knowledge gaps',
-				estimatedDuration: 240, // minutes
-				modules: gaps.slice(0, 3).map((gap: { topic: string; level: string }, index: number) => ({
-					id: `module-${index + 1}`,
-					title: `Mastering ${gap.topic}`,
-					description: `Deep dive into ${gap.topic} concepts`,
-					duration: 80,
-					lessons: [
-						{
-							id: `lesson-${index + 1}-1`,
-							title: `Introduction to ${gap.topic}`,
-							type: 'theory',
-							content: `This lesson covers the fundamentals of ${gap.topic}...`,
-							estimatedTime: 20,
-						},
-						{
-							id: `lesson-${index + 1}-2`,
-							title: `${gap.topic} in Practice`,
-							type: 'practical',
-							content: `Let's implement ${gap.topic} in a real project...`,
-							estimatedTime: 40,
-						},
-					],
-				})),
-				prerequisites: [],
-				learningObjectives: [
-					'Understand core concepts',
-					'Apply knowledge in practical scenarios',
-					'Build confidence in the subject area',
-				],
-			},
-		});
-	}),
-
-	// Mock user progress tracking
-	http.post('/api/progress/update', async ({ request }) => {
-		const body = await request.json();
+	// Mock shared ranking retrieval
+	http.get('/api/rankings/shared/:shareId', async ({ params }) => {
+		const { shareId } = params;
 
 		await new Promise(resolve => setTimeout(resolve, 300));
 
 		return HttpResponse.json({
-			success: true,
-			progress: {
-				userId: 'mock-user',
-				courseId: (body as ProgressRequestBody)?.courseId,
-				completedLessons: (body as ProgressRequestBody)?.completedLessons || [],
-				currentModule: (body as ProgressRequestBody)?.currentModule || 1,
-				overallProgress: 0.65,
-				timeSpent: 120, // minutes
+			id: shareId,
+			packId: 'mock-pack-id',
+			rankings: [
+				{ cardId: 'card-1', rank: 1, score: 0.85 },
+				{ cardId: 'card-2', rank: 2, score: 0.73 },
+				{ cardId: 'card-3', rank: 3, score: 0.61 },
+			],
+			comparisons: [
+				{ cardIds: ['card-1', 'card-2'], winnerId: 'card-1', timestamp: Date.now() - 300000 },
+				{ cardIds: ['card-2', 'card-3'], winnerId: 'card-2', timestamp: Date.now() - 200000 },
+				{ cardIds: ['card-1', 'card-3'], winnerId: 'card-1', timestamp: Date.now() - 100000 },
+			],
+			metadata: {
+				completedAt: Date.now() - 60000,
+				totalComparisons: 3,
+				timeSpent: 180, // 3 minutes
 			},
 		});
 	}),
 
-	// Mock WebLLM model loading
-	http.get('/models/:modelName', ({ params }) => {
-		const { modelName } = params;
+	// Mock pack sharing
+	http.post('/api/packs/share', async ({ request }) => {
+		const body = await request.json();
+		const pack = body as PackShareRequestBody;
+
+		await new Promise(resolve => setTimeout(resolve, 400));
+
+		const shareId = `pack-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 		return HttpResponse.json({
-			model: modelName,
-			size: '2.1GB',
-			status: 'available',
-			capabilities: ['text-generation', 'code-analysis'],
-			downloadUrl: `https://mock-cdn.example.com/models/${modelName}`,
+			shareId,
+			url: `${window.location.origin}/rank/shared/${shareId}`,
+		});
+	}),
+
+	// Mock pack analytics
+	http.get('/api/analytics/packs/:packId', async ({ params }) => {
+		const { packId } = params;
+
+		await new Promise(resolve => setTimeout(resolve, 600));
+
+		return HttpResponse.json({
+			packId,
+			totalRankings: 47,
+			averageTime: 245, // seconds
+			popularComparisons: [
+				{
+					cardIds: ['card-1', 'card-2'],
+					winnerFrequency: { 'card-1': 28, 'card-2': 19 },
+				},
+				{
+					cardIds: ['card-2', 'card-3'],
+					winnerFrequency: { 'card-2': 31, 'card-3': 16 },
+				},
+			],
 		});
 	}),
 
 	// Mock error scenarios for testing
-	http.post('/api/llm/error-test', () => {
-		return HttpResponse.json({ error: 'Mock API error for testing' }, { status: 500 });
+	http.post('/api/rankings/error-test', () => {
+		return HttpResponse.json({ error: 'Mock ranking API error for testing' }, { status: 500 });
 	}),
 
 	// Health check endpoint
