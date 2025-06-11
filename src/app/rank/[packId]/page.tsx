@@ -24,7 +24,7 @@ interface RankingPageProps {
 export default function RankingPage({ params }: RankingPageProps) {
 	const resolvedParams = use(params);
 	const router = useRouter();
-	const { getPackById } = useCardsStore();
+	// const { getPackById } = useCardsStore(); // Not needed since we get pack from store state directly
 	const { currentSession, startSession, submitComparison, endSession } = useRankingStore();
 
 	const [pack, _setPack] = useState(useCardsStore.getState().getPackById(resolvedParams.packId));
@@ -195,6 +195,7 @@ export default function RankingPage({ params }: RankingPageProps) {
 									stroke="currentColor"
 									viewBox="0 0 24 24"
 								>
+									<title>Ranking complete success icon</title>
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"

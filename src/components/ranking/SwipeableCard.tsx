@@ -126,6 +126,7 @@ export function SwipeableCard({
 					>
 						<div className="bg-red-500 text-white rounded-full p-3">
 							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<title>Reject swipe indicator</title>
 								<path
 									strokeLinecap="round"
 									strokeLinejoin="round"
@@ -147,6 +148,7 @@ export function SwipeableCard({
 					>
 						<div className="bg-green-500 text-white rounded-full p-3">
 							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<title>Accept swipe indicator</title>
 								<path
 									strokeLinecap="round"
 									strokeLinejoin="round"

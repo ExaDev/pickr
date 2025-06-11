@@ -137,7 +137,8 @@ export default function ComparePage() {
 					});
 				}
 
-				const item = allItems.get(key)!;
+				const item = allItems.get(key);
+				if (!item) return;
 				// Inverse ranking (higher rank = lower score)
 				const normalizedScore =
 					(comparison.rankings.length - rankedCard.rank + 1) / comparison.rankings.length;
@@ -227,6 +228,7 @@ export default function ComparePage() {
 												stroke="currentColor"
 												viewBox="0 0 24 24"
 											>
+												<title>Remove input</title>
 												<path
 													strokeLinecap="round"
 													strokeLinejoin="round"
@@ -389,6 +391,7 @@ export default function ComparePage() {
 					>
 						<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
 							<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<title>No comparisons chart icon</title>
 								<path
 									strokeLinecap="round"
 									strokeLinejoin="round"

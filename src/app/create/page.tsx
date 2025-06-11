@@ -179,6 +179,7 @@ export default function CreatePackPage() {
 												stroke="currentColor"
 												viewBox="0 0 24 24"
 											>
+												<title>Add new item icon</title>
 												<path
 													strokeLinecap="round"
 													strokeLinejoin="round"
@@ -193,7 +194,10 @@ export default function CreatePackPage() {
 								) : (
 									<div className="space-y-3 max-h-96 overflow-y-auto">
 										{cards.map((card, index) => (
-											<div key={index} className="relative group">
+											<div
+												key={`preview-${index}-${card.content.slice(0, 10)}`}
+												className="relative group"
+											>
 												<PickrCard
 													card={{
 														id: `preview-${index}`,
@@ -215,6 +219,7 @@ export default function CreatePackPage() {
 														stroke="currentColor"
 														viewBox="0 0 24 24"
 													>
+														<title>Remove item</title>
 														<path
 															strokeLinecap="round"
 															strokeLinejoin="round"

@@ -22,7 +22,7 @@ export function PackGrid({
 		return (
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 				{Array.from({ length: 6 }).map((_, i) => (
-					<Card key={i} className="animate-pulse">
+					<Card key={`skeleton-${i}`} className="animate-pulse">
 						<CardHeader>
 							<div className="h-6 bg-muted rounded w-3/4" />
 							<div className="h-4 bg-muted rounded w-1/2" />
@@ -47,6 +47,7 @@ export function PackGrid({
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
+						<title>Empty pack list icon</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -93,6 +94,7 @@ export function PackGrid({
 									className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0"
 								>
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<title>Delete pack</title>
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -109,6 +111,7 @@ export function PackGrid({
 						<div className="flex items-center gap-4 text-sm text-muted-foreground">
 							<div className="flex items-center gap-1">
 								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<title>Cards count icon</title>
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
@@ -160,6 +163,7 @@ export function PackGrid({
 								stroke="currentColor"
 								viewBox="0 0 24 24"
 							>
+								<title>Create new pack</title>
 								<path
 									strokeLinecap="round"
 									strokeLinejoin="round"

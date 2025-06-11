@@ -31,6 +31,7 @@ export function RankingSidebar({
 					className="rounded-full shadow-lg"
 				>
 					<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<title>Expand sidebar</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -55,6 +56,7 @@ export function RankingSidebar({
 				{onToggleCollapse && (
 					<Button variant="ghost" size="icon" onClick={onToggleCollapse}>
 						<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<title>Collapse sidebar</title>
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
 						</svg>
 					</Button>
@@ -106,6 +108,7 @@ export function RankingSidebar({
 						<div className="text-center text-muted-foreground py-8">
 							<div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
 								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<title>Empty rankings list icon</title>
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
