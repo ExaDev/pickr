@@ -1,56 +1,39 @@
-import type { AssessmentResult, KnowledgeGap } from '@/types';
-
 /**
- * Calculate assessment score as a percentage
+ * Generate a random ID
  */
-export function calculateAssessmentScore(results: AssessmentResult[]): number {
-	if (results.length === 0) return 0;
-
-	const correctAnswers = results.filter(result => result.isCorrect).length;
-	return Math.round((correctAnswers / results.length) * 100);
+export function generateId(): string {
+	return crypto.randomUUID();
 }
 
 /**
- * Determine knowledge gaps based on assessment results
+ * Format a date for display
  */
-export function identifyKnowledgeGaps(
-	results: AssessmentResult[],
-	topics: string[]
-): KnowledgeGap[] {
-	const topicScores = new Map<string, { correct: number; total: number }>();
+export function formatDate(date: Date): string {
+	return new Intl.DateTimeFormat('en-GB', {
+		day: 'numeric',
+		month: 'short',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	}).format(date);
+}
 
-	// Initialize topic scores
-	topics.forEach(topic => {
-		topicScores.set(topic, { correct: 0, total: 0 });
-	});
+/**
+ * Format a relative time (e.g., "2 minutes ago")
+ */
+export function formatRelativeTime(date: Date): string {
+	const now = new Date();
+	const diffMs = now.getTime() - date.getTime();
+	const diffMins = Math.floor(diffMs / 60000);
+	const diffHours = Math.floor(diffMins / 60);
+	const diffDays = Math.floor(diffHours / 24);
 
-	// Calculate scores per topic (simplified - would need question-topic mapping)
-	results.forEach(result => {
-		const topic = topics[Math.floor(Math.random() * topics.length)]; // Simplified
-		const scores = topicScores.get(topic);
-		if (scores) {
-			scores.total += 1;
-			if (result.isCorrect) {
-				scores.correct += 1;
-			}
-		}
-	});
-
-	// Identify gaps (confidence < 0.7)
-	const gaps: KnowledgeGap[] = [];
-	topicScores.forEach((scores, topic) => {
-		const confidence = scores.total > 0 ? scores.correct / scores.total : 0;
-		if (confidence < 0.7) {
-			gaps.push({
-				topic,
-				level: confidence < 0.3 ? 'beginner' : confidence < 0.6 ? 'intermediate' : 'advanced',
-				confidence,
-				subtopics: [], // Would be populated based on detailed analysis
-			});
-		}
-	});
-
-	return gaps;
+	if (diffMins < 1) return 'Just now';
+	if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+	if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+	if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+	
+	return formatDate(date);
 }
 
 /**
@@ -72,26 +55,76 @@ export function formatDuration(minutes: number): string {
 }
 
 /**
- * Generate a random ID string
+ * Debounce function
  */
-export function generateId(): string {
-	return Math.random().toString(36).substring(2) + Date.now().toString(36);
+export function debounce<T extends (...args: unknown[]) => unknown>(
+	func: T,
+	wait: number
+): (...args: Parameters<T>) => void {
+	let timeout: NodeJS.Timeout;
+	return (...args: Parameters<T>) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func(...args), wait);
+	};
 }
 
 /**
- * Check if browser supports WebGPU for LLM acceleration
+ * Throttle function
  */
-export async function checkWebGPUSupport(): Promise<boolean> {
-	if (typeof navigator === 'undefined' || !('gpu' in navigator)) {
-		return false;
-	}
+export function throttle<T extends (...args: unknown[]) => unknown>(
+	func: T,
+	limit: number
+): (...args: Parameters<T>) => void {
+	let inThrottle: boolean;
+	return (...args: Parameters<T>) => {
+		if (!inThrottle) {
+			func(...args);
+			inThrottle = true;
+			setTimeout(() => (inThrottle = false), limit);
+		}
+	};
+}
 
+/**
+ * Check if a value is empty (null, undefined, empty string, empty array, empty object)
+ */
+export function isEmpty(value: unknown): boolean {
+	if (value === null || value === undefined) return true;
+	if (typeof value === 'string') return value.trim().length === 0;
+	if (Array.isArray(value)) return value.length === 0;
+	if (typeof value === 'object') return Object.keys(value).length === 0;
+	return false;
+}
+
+/**
+ * Capitalize the first letter of a string
+ */
+export function capitalize(str: string): string {
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Truncate text to a maximum length
+ */
+export function truncate(text: string, maxLength: number, suffix = '...'): string {
+	if (text.length <= maxLength) return text;
+	return text.slice(0, maxLength - suffix.length) + suffix;
+}
+
+/**
+ * Safe JSON parse with fallback
+ */
+export function safeJsonParse<T>(json: string, fallback: T): T {
 	try {
-		const gpu = (navigator as { gpu?: { requestAdapter(): Promise<unknown> } }).gpu;
-		if (!gpu) return false;
-		const adapter = await gpu.requestAdapter();
-		return adapter !== null;
+		return JSON.parse(json);
 	} catch {
-		return false;
+		return fallback;
 	}
+}
+
+/**
+ * Check if code is running in browser
+ */
+export function isBrowser(): boolean {
+	return typeof window !== 'undefined';
 }
