@@ -1,16 +1,22 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useRankingStore, useResultsStore } from '../../../store';
-import { calculateFinalRankings } from '../../../lib/ranking/utils';
-import { encodeToPaco, getShareableUrl } from '../../../lib/paco/encoding';
+import { useRouter } from 'next/navigation';
+import { use, useEffect, useState } from 'react';
 import { PickrCard } from '../../../components/cards/PickrCard';
 import { Button } from '../../../components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/Card';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '../../../components/ui/Card';
+import { encodeToPaco, getShareableUrl } from '../../../lib/paco/encoding';
+import { calculateFinalRankings } from '../../../lib/ranking/utils';
 import { formatDate, formatDuration } from '../../../lib/utils';
-import type { RankingSession, RankingResult, PacoData } from '../../../types';
+import { useRankingStore, useResultsStore } from '../../../store';
+import type { PacoData, RankingResult, RankingSession } from '../../../types';
 
 interface ResultsPageProps {
 	params: Promise<{
@@ -22,8 +28,8 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 	const resolvedParams = use(params);
 	const router = useRouter();
 	const { getSessionById } = useRankingStore();
-	const { addResult, generatePacoCode } = useResultsStore();
-	
+	const { addResult } = useResultsStore();
+
 	const [session, setSession] = useState<RankingSession | null>(null);
 	const [result, setResult] = useState<RankingResult | null>(null);
 	const [shareUrl, setShareUrl] = useState<string>('');
@@ -59,7 +65,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 					totalComparisons: sessionData.comparisons.length,
 					algorithm: sessionData.settings.algorithm,
 					completionTime: sessionData.updatedAt.getTime() - sessionData.createdAt.getTime(),
-				}
+				},
 			};
 
 			// Store result
@@ -74,7 +80,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 					timestamp: resultData.createdAt,
 					version: '1.0',
 					algorithm: resultData.metadata.algorithm,
-				}
+				},
 			};
 
 			try {
@@ -85,7 +91,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 				console.error('Failed to generate share URL:', error);
 			}
 		}
-	}, [params.sessionId]);
+	}, [resolvedParams.sessionId, router, getSessionById, addResult]);
 
 	const handleCopyUrl = async () => {
 		if (!shareUrl) return;
@@ -93,7 +99,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 		setCopying(true);
 		try {
 			await navigator.clipboard.writeText(shareUrl);
-		} catch (error) {
+		} catch (_error) {
 			// Fallback for browsers that don't support clipboard API
 			const textArea = document.createElement('textarea');
 			textArea.value = shareUrl;
@@ -139,8 +145,19 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 						transition={{ duration: 0.5 }}
 					>
 						<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-							<svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							<svg
+								className="w-8 h-8 text-primary"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<title>Success checkmark icon</title>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
 							</svg>
 						</div>
 						<h1 className="text-4xl font-bold mb-4">Ranking Complete!</h1>
@@ -196,12 +213,17 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 							>
 								{/* Rank */}
 								<div className="flex-shrink-0">
-									<div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
-										rankedCard.rank === 1 ? 'bg-yellow-500 text-white' :
-										rankedCard.rank === 2 ? 'bg-gray-400 text-white' :
-										rankedCard.rank === 3 ? 'bg-orange-600 text-white' :
-										'bg-muted text-muted-foreground'
-									}`}>
+									<div
+										className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
+											rankedCard.rank === 1
+												? 'bg-yellow-500 text-white'
+												: rankedCard.rank === 2
+													? 'bg-gray-400 text-white'
+													: rankedCard.rank === 3
+														? 'bg-orange-600 text-white'
+														: 'bg-muted text-muted-foreground'
+										}`}
+									>
 										{rankedCard.rank}
 									</div>
 								</div>
@@ -258,7 +280,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 							initial={{ scale: 0.95, opacity: 0 }}
 							animate={{ scale: 1, opacity: 1 }}
 							exit={{ scale: 0.95, opacity: 0 }}
-							onClick={(e) => e.stopPropagation()}
+							onClick={e => e.stopPropagation()}
 						>
 							<h3 className="text-xl font-semibold mb-4">Share Your Results</h3>
 							<p className="text-muted-foreground mb-6">
