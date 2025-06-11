@@ -280,11 +280,7 @@ export default function ResultsPage({ params }: ResultsPageProps) {
 					<Button onClick={handleShare} size="lg" className="min-w-[160px]">
 						Share Results
 					</Button>
-					<Button 
-						variant="outline" 
-						onClick={() => router.push('/compare')} 
-						size="lg"
-					>
+					<Button variant="outline" onClick={() => router.push('/compare')} size="lg">
 						Compare with Others
 					</Button>
 					<Button variant="ghost" onClick={handleNewRanking} size="lg">

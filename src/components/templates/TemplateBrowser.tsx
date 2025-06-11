@@ -1,24 +1,24 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
-import { useCardsStore } from '../../store';
-import { 
-	TEMPLATE_CATEGORIES, 
-	DEFAULT_TEMPLATES, 
-	getTemplatesByCategory, 
-	searchTemplates,
+import { useMemo, useState } from 'react';
+import {
+	DEFAULT_TEMPLATES,
+	type PackTemplate,
+	TEMPLATE_CATEGORIES,
+	type TemplateCategory,
 	getPopularTemplates,
 	getRecentTemplates,
-	templateToPack,
+	getTemplatesByCategory,
 	incrementTemplateUsage,
-	type PackTemplate,
-	type TemplateCategory
+	searchTemplates,
+	templateToPack,
 } from '../../lib/templates';
+import { useCardsStore } from '../../store';
+import { Button } from '../ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
+import { Input } from '../ui/Input';
 
 interface TemplateBrowserProps {
 	onSelectTemplate?: (template: PackTemplate) => void;
@@ -28,12 +28,12 @@ interface TemplateBrowserProps {
 	className?: string;
 }
 
-export function TemplateBrowser({ 
-	onSelectTemplate, 
+export function TemplateBrowser({
+	onSelectTemplate,
 	showSearch = true,
 	showCategories = true,
 	maxItems,
-	className = ''
+	className = '',
 }: TemplateBrowserProps) {
 	const router = useRouter();
 	const { addPack, addCardToPack } = useCardsStore();
@@ -99,13 +99,18 @@ export function TemplateBrowser({
 
 	const getViewTitle = () => {
 		switch (view) {
-			case 'popular': return 'Popular Templates';
-			case 'recent': return 'Recent Templates';
-			case 'category': 
+			case 'popular':
+				return 'Popular Templates';
+			case 'recent':
+				return 'Recent Templates';
+			case 'category': {
 				const category = TEMPLATE_CATEGORIES.find(c => c.id === selectedCategory);
 				return category ? `${category.name} Templates` : 'Category Templates';
-			case 'search': return `Search Results: "${searchQuery}"`;
-			default: return 'All Templates';
+			}
+			case 'search':
+				return `Search Results: "${searchQuery}"`;
+			default:
+				return 'All Templates';
 		}
 	};
 
@@ -116,11 +121,11 @@ export function TemplateBrowser({
 				<div className="space-y-4">
 					<Input
 						value={searchQuery}
-						onChange={(e) => handleSearch(e.target.value)}
+						onChange={e => handleSearch(e.target.value)}
 						placeholder="Search templates by name, description, or tags..."
 						className="max-w-md"
 					/>
-					
+
 					{/* Quick view buttons */}
 					<div className="flex gap-2 flex-wrap">
 						<Button
@@ -156,7 +161,7 @@ export function TemplateBrowser({
 				<div className="space-y-3">
 					<h3 className="text-lg font-semibold">Browse by Category</h3>
 					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-						{TEMPLATE_CATEGORIES.map((category) => (
+						{TEMPLATE_CATEGORIES.map(category => (
 							<motion.button
 								key={category.id}
 								className={`p-3 rounded-lg border text-left transition-all ${
@@ -205,10 +210,7 @@ export function TemplateBrowser({
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ duration: 0.3, delay: index * 0.1 }}
 								>
-									<TemplateCard
-										template={template}
-										onUse={() => handleUseTemplate(template)}
-									/>
+									<TemplateCard template={template} onUse={() => handleUseTemplate(template)} />
 								</motion.div>
 							))}
 						</motion.div>
@@ -221,7 +223,12 @@ export function TemplateBrowser({
 						>
 							<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
 								<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+									/>
 								</svg>
 							</div>
 							<p className="text-lg font-medium mb-2">No templates found</p>
@@ -248,9 +255,7 @@ function TemplateCard({ template, onUse }: TemplateCardProps) {
 				<div className="flex items-start justify-between gap-2">
 					<div className="flex-1 min-w-0">
 						<CardTitle className="text-lg line-clamp-2">{template.name}</CardTitle>
-						<CardDescription className="line-clamp-2">
-							{template.description}
-						</CardDescription>
+						<CardDescription className="line-clamp-2">{template.description}</CardDescription>
 					</div>
 					{category && (
 						<div className="flex-shrink-0 text-2xl" title={category.name}>
@@ -267,10 +272,7 @@ function TemplateCard({ template, onUse }: TemplateCardProps) {
 					</p>
 					<div className="flex flex-wrap gap-1">
 						{template.cards.slice(0, 6).map((card, index) => (
-							<span
-								key={index}
-								className="inline-block px-2 py-1 bg-muted text-xs rounded-md"
-							>
+							<span key={index} className="inline-block px-2 py-1 bg-muted text-xs rounded-md">
 								{card}
 							</span>
 						))}

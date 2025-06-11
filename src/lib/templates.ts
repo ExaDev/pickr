@@ -120,7 +120,16 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Best Smartphone Brands 2024',
 		description: 'Rank the top smartphone manufacturers and their flagship devices',
 		category: 'tech',
-		cards: ['Apple iPhone', 'Samsung Galaxy', 'Google Pixel', 'OnePlus', 'Xiaomi', 'Nothing Phone', 'Sony Xperia', 'ASUS ROG Phone'],
+		cards: [
+			'Apple iPhone',
+			'Samsung Galaxy',
+			'Google Pixel',
+			'OnePlus',
+			'Xiaomi',
+			'Nothing Phone',
+			'Sony Xperia',
+			'ASUS ROG Phone',
+		],
 		tags: ['smartphones', 'technology', 'mobile', 'brands'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -131,7 +140,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Programming Languages',
 		description: 'Which programming languages do you prefer for development?',
 		category: 'tech',
-		cards: ['JavaScript', 'Python', 'TypeScript', 'Java', 'C++', 'Rust', 'Go', 'Swift', 'Kotlin', 'PHP'],
+		cards: [
+			'JavaScript',
+			'Python',
+			'TypeScript',
+			'Java',
+			'C++',
+			'Rust',
+			'Go',
+			'Swift',
+			'Kotlin',
+			'PHP',
+		],
 		tags: ['programming', 'coding', 'development', 'languages'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -142,20 +162,38 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'AI Tools & Platforms',
 		description: 'Rank your favorite AI tools and platforms',
 		category: 'tech',
-		cards: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Midjourney', 'Stable Diffusion', 'Notion AI', 'Grammarly', 'Canva AI'],
+		cards: [
+			'ChatGPT',
+			'Claude',
+			'GitHub Copilot',
+			'Midjourney',
+			'Stable Diffusion',
+			'Notion AI',
+			'Grammarly',
+			'Canva AI',
+		],
 		tags: ['ai', 'artificial-intelligence', 'tools', 'productivity'],
 		usageCount: 0,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	},
-	
+
 	// Entertainment
 	{
 		id: 'marvel-movies',
 		name: 'Marvel Cinematic Universe',
 		description: 'Rank your favorite MCU movies from best to worst',
 		category: 'entertainment',
-		cards: ['Avengers: Endgame', 'Iron Man', 'The Avengers', 'Thor: Ragnarok', 'Guardians of the Galaxy', 'Black Panther', 'Spider-Man: Homecoming', 'Doctor Strange'],
+		cards: [
+			'Avengers: Endgame',
+			'Iron Man',
+			'The Avengers',
+			'Thor: Ragnarok',
+			'Guardians of the Galaxy',
+			'Black Panther',
+			'Spider-Man: Homecoming',
+			'Doctor Strange',
+		],
 		tags: ['movies', 'marvel', 'superheroes', 'cinema'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -166,7 +204,16 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Streaming Services',
 		description: 'Which streaming platform offers the best content?',
 		category: 'entertainment',
-		cards: ['Netflix', 'Disney+', 'HBO Max', 'Amazon Prime Video', 'Apple TV+', 'Hulu', 'YouTube Premium', 'Paramount+'],
+		cards: [
+			'Netflix',
+			'Disney+',
+			'HBO Max',
+			'Amazon Prime Video',
+			'Apple TV+',
+			'Hulu',
+			'YouTube Premium',
+			'Paramount+',
+		],
 		tags: ['streaming', 'entertainment', 'tv', 'movies'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -177,7 +224,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Music Genres',
 		description: 'Rank your favorite music genres and styles',
 		category: 'entertainment',
-		cards: ['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Jazz', 'Classical', 'R&B', 'Country', 'Indie', 'Metal'],
+		cards: [
+			'Pop',
+			'Rock',
+			'Hip-Hop',
+			'Electronic',
+			'Jazz',
+			'Classical',
+			'R&B',
+			'Country',
+			'Indie',
+			'Metal',
+		],
 		tags: ['music', 'genres', 'audio', 'entertainment'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -190,7 +248,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'World Cuisines',
 		description: 'Rank your favorite international food styles',
 		category: 'food',
-		cards: ['Italian', 'Japanese', 'Mexican', 'Indian', 'Thai', 'French', 'Chinese', 'Mediterranean', 'Korean', 'Vietnamese'],
+		cards: [
+			'Italian',
+			'Japanese',
+			'Mexican',
+			'Indian',
+			'Thai',
+			'French',
+			'Chinese',
+			'Mediterranean',
+			'Korean',
+			'Vietnamese',
+		],
 		tags: ['food', 'cuisine', 'international', 'cooking'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -201,7 +270,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Coffee Drinks',
 		description: 'Rank your favorite coffee preparations and drinks',
 		category: 'food',
-		cards: ['Espresso', 'Cappuccino', 'Latte', 'Americano', 'Mocha', 'Macchiato', 'Cold Brew', 'French Press', 'Pour Over', 'Flat White'],
+		cards: [
+			'Espresso',
+			'Cappuccino',
+			'Latte',
+			'Americano',
+			'Mocha',
+			'Macchiato',
+			'Cold Brew',
+			'French Press',
+			'Pour Over',
+			'Flat White',
+		],
 		tags: ['coffee', 'beverages', 'drinks', 'caffeine'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -214,7 +294,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Olympic Sports',
 		description: 'Which Olympic sports are most exciting to watch?',
 		category: 'sports',
-		cards: ['Swimming', 'Athletics', 'Gymnastics', 'Basketball', 'Soccer', 'Tennis', 'Cycling', 'Volleyball', 'Boxing', 'Wrestling'],
+		cards: [
+			'Swimming',
+			'Athletics',
+			'Gymnastics',
+			'Basketball',
+			'Soccer',
+			'Tennis',
+			'Cycling',
+			'Volleyball',
+			'Boxing',
+			'Wrestling',
+		],
 		tags: ['olympics', 'sports', 'competition', 'athletics'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -227,7 +318,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Dream Travel Destinations',
 		description: 'Rank your bucket list travel destinations',
 		category: 'lifestyle',
-		cards: ['Japan', 'New Zealand', 'Iceland', 'Italy', 'Thailand', 'Norway', 'Australia', 'Costa Rica', 'Greece', 'Morocco'],
+		cards: [
+			'Japan',
+			'New Zealand',
+			'Iceland',
+			'Italy',
+			'Thailand',
+			'Norway',
+			'Australia',
+			'Costa Rica',
+			'Greece',
+			'Morocco',
+		],
 		tags: ['travel', 'destinations', 'vacation', 'adventure'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -238,7 +340,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Social Media Platforms',
 		description: 'Which social platforms do you use most?',
 		category: 'lifestyle',
-		cards: ['Instagram', 'Twitter/X', 'TikTok', 'LinkedIn', 'YouTube', 'Facebook', 'Discord', 'Reddit', 'Snapchat', 'Pinterest'],
+		cards: [
+			'Instagram',
+			'Twitter/X',
+			'TikTok',
+			'LinkedIn',
+			'YouTube',
+			'Facebook',
+			'Discord',
+			'Reddit',
+			'Snapchat',
+			'Pinterest',
+		],
 		tags: ['social-media', 'platforms', 'communication', 'networking'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -251,7 +364,18 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Life Priorities',
 		description: 'Rank what matters most to you in life',
 		category: 'personal',
-		cards: ['Family', 'Health', 'Career', 'Financial Security', 'Personal Growth', 'Relationships', 'Hobbies', 'Travel', 'Education', 'Community'],
+		cards: [
+			'Family',
+			'Health',
+			'Career',
+			'Financial Security',
+			'Personal Growth',
+			'Relationships',
+			'Hobbies',
+			'Travel',
+			'Education',
+			'Community',
+		],
 		tags: ['life', 'priorities', 'values', 'personal-growth'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -262,7 +386,16 @@ export const DEFAULT_TEMPLATES: PackTemplate[] = [
 		name: 'Productivity Methods',
 		description: 'Which productivity techniques work best for you?',
 		category: 'personal',
-		cards: ['Pomodoro Technique', 'Getting Things Done', 'Time Blocking', 'Eisenhower Matrix', 'Kanban Boards', 'Deep Work', 'Habit Stacking', 'Energy Management'],
+		cards: [
+			'Pomodoro Technique',
+			'Getting Things Done',
+			'Time Blocking',
+			'Eisenhower Matrix',
+			'Kanban Boards',
+			'Deep Work',
+			'Habit Stacking',
+			'Energy Management',
+		],
 		tags: ['productivity', 'organization', 'efficiency', 'methods'],
 		usageCount: 0,
 		createdAt: new Date(),
@@ -291,27 +424,26 @@ export function searchTemplates(query: string): PackTemplate[] {
 	const searchTerm = query.toLowerCase().trim();
 	if (!searchTerm) return DEFAULT_TEMPLATES;
 
-	return DEFAULT_TEMPLATES.filter(template =>
-		template.name.toLowerCase().includes(searchTerm) ||
-		template.description.toLowerCase().includes(searchTerm) ||
-		template.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
-		template.cards.some(card => card.toLowerCase().includes(searchTerm))
+	return DEFAULT_TEMPLATES.filter(
+		template =>
+			template.name.toLowerCase().includes(searchTerm) ||
+			template.description.toLowerCase().includes(searchTerm) ||
+			template.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+			template.cards.some(card => card.toLowerCase().includes(searchTerm))
 	);
 }
 
 /**
  * Get popular templates (by usage count)
  */
-export function getPopularTemplates(limit: number = 8): PackTemplate[] {
-	return [...DEFAULT_TEMPLATES]
-		.sort((a, b) => b.usageCount - a.usageCount)
-		.slice(0, limit);
+export function getPopularTemplates(limit = 8): PackTemplate[] {
+	return [...DEFAULT_TEMPLATES].sort((a, b) => b.usageCount - a.usageCount).slice(0, limit);
 }
 
 /**
  * Get recent templates
  */
-export function getRecentTemplates(limit: number = 8): PackTemplate[] {
+export function getRecentTemplates(limit = 8): PackTemplate[] {
 	return [...DEFAULT_TEMPLATES]
 		.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 		.slice(0, limit);
@@ -320,7 +452,9 @@ export function getRecentTemplates(limit: number = 8): PackTemplate[] {
 /**
  * Convert template to pack
  */
-export function templateToPack(template: PackTemplate): Omit<Pack, 'id' | 'createdAt' | 'updatedAt' | 'cards'> & { cards: string[] } {
+export function templateToPack(
+	template: PackTemplate
+): Omit<Pack, 'id' | 'createdAt' | 'updatedAt' | 'cards'> & { cards: string[] } {
 	return {
 		name: template.name,
 		description: template.description,

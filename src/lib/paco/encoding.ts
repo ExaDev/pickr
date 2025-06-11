@@ -6,10 +6,10 @@
 import type { PacoData, RankedCard } from '../../types';
 
 // Current version of the encoding format
-const PACO_VERSION = '1.0';
+const _PACO_VERSION = '1.0';
 
 // Base64 URL-safe characters (RFC 4648)
-const BASE64_URL_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const _BASE64_URL_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
 interface CompactRankedCard {
 	i: string; // id
@@ -47,17 +47,17 @@ export function encodeToPaco(data: PacoData): string {
 				s: Math.round(card.score * 100),
 				w: card.wins,
 				l: card.losses,
-				...(card.imageUrl && { img: compressImageUrl(card.imageUrl) })
-			}))
+				...(card.imageUrl && { img: compressImageUrl(card.imageUrl) }),
+			})),
 		};
 
 		// Convert to JSON and compress
 		const jsonString = JSON.stringify(compact);
 		const compressed = compressString(jsonString);
-		
+
 		// Encode to base64 URL-safe
 		const encoded = encodeBase64Url(compressed);
-		
+
 		return `p_${encoded}`;
 	} catch (error) {
 		console.error('Failed to encode Paco data:', error);
@@ -78,7 +78,7 @@ export function decodeFromPaco(pacoCode: string): PacoData | null {
 		// Decode from base64 URL-safe
 		const encoded = pacoCode.slice(2);
 		const compressed = decodeBase64Url(encoded);
-		
+
 		// Decompress
 		const jsonString = decompressString(compressed);
 		const compact: CompactPacoData = JSON.parse(jsonString);
@@ -97,7 +97,7 @@ export function decodeFromPaco(pacoCode: string): PacoData | null {
 			wins: card.w,
 			losses: card.l,
 			createdAt: new Date(), // Placeholder since we don't store this
-			...(card.img && { imageUrl: decompressImageUrl(card.img) })
+			...(card.img && { imageUrl: decompressImageUrl(card.img) }),
 		}));
 
 		return {
@@ -107,7 +107,7 @@ export function decodeFromPaco(pacoCode: string): PacoData | null {
 				timestamp: new Date(compact.t * 1000),
 				version: compact.v,
 				algorithm: compact.a,
-			}
+			},
 		};
 	} catch (error) {
 		console.error('Failed to decode Paco data:', error);
@@ -175,12 +175,9 @@ function decompressString(str: string): string {
 function encodeBase64Url(str: string): string {
 	// Convert string to base64
 	const base64 = btoa(unescape(encodeURIComponent(str)));
-	
+
 	// Make URL-safe
-	return base64
-		.replace(/\+/g, '-')
-		.replace(/\//g, '_')
-		.replace(/=/g, '');
+	return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 /**
@@ -188,13 +185,11 @@ function encodeBase64Url(str: string): string {
  */
 function decodeBase64Url(str: string): string {
 	// Add padding if needed
-	const padded = str + '='.repeat((4 - str.length % 4) % 4);
-	
+	const padded = str + '='.repeat((4 - (str.length % 4)) % 4);
+
 	// Convert back from URL-safe
-	const base64 = padded
-		.replace(/-/g, '+')
-		.replace(/_/g, '/');
-	
+	const base64 = padded.replace(/-/g, '+').replace(/_/g, '/');
+
 	// Decode from base64
 	return decodeURIComponent(escape(atob(base64)));
 }
@@ -231,7 +226,7 @@ export function generateShortCode(pacoCode: string): string {
 	const content = pacoCode.slice(2); // Remove 'p_' prefix
 	const short = content.slice(0, 8);
 	const checksum = generateChecksum(content);
-	
+
 	return `${short}${checksum}`;
 }
 
@@ -242,10 +237,10 @@ function generateChecksum(str: string): string {
 	let hash = 0;
 	for (let i = 0; i < str.length; i++) {
 		const char = str.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
+		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32-bit integer
 	}
-	
+
 	// Convert to base36 and take first 2 characters
 	return Math.abs(hash).toString(36).slice(0, 2);
 }
@@ -258,6 +253,6 @@ export function estimateEncodedSize(data: PacoData): number {
 	const jsonSize = JSON.stringify(data).length;
 	const compressedEstimate = jsonSize * 0.7; // Assume 30% compression
 	const base64Estimate = compressedEstimate * 1.33; // Base64 overhead
-	
+
 	return Math.ceil(base64Estimate);
 }

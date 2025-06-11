@@ -1,13 +1,19 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCardsStore, useRankingStore } from '../../../store';
-import { SwipeComparisonView } from '../../../components/ranking/SwipeComparisonView';
+import { use, useEffect, useState } from 'react';
 import { RankingSidebar } from '../../../components/ranking/RankingSidebar';
+import { SwipeComparisonView } from '../../../components/ranking/SwipeComparisonView';
 import { Button } from '../../../components/ui/Button';
-import { generateNextComparison as getNextComparison, calculateProgress, isRankingComplete, calculateFinalRankings, getDefaultRankingSettings } from '../../../lib/ranking/utils';
-import type { Card, Comparison } from '../../../types';
+import {
+	calculateFinalRankings,
+	calculateProgress,
+	getDefaultRankingSettings,
+	generateNextComparison as getNextComparison,
+	isRankingComplete,
+} from '../../../lib/ranking/utils';
+import { useCardsStore, useRankingStore } from '../../../store';
+import type { Card, Comparison, RankedCard } from '../../../types';
 
 interface RankingPageProps {
 	params: Promise<{
@@ -20,10 +26,10 @@ export default function RankingPage({ params }: RankingPageProps) {
 	const router = useRouter();
 	const { getPackById } = useCardsStore();
 	const { currentSession, startSession, submitComparison, endSession } = useRankingStore();
-	
-	const [pack, setPack] = useState(useCardsStore.getState().getPackById(resolvedParams.packId));
+
+	const [pack, _setPack] = useState(useCardsStore.getState().getPackById(resolvedParams.packId));
 	const [currentComparison, setCurrentComparison] = useState<Comparison | null>(null);
-	const [rankings, setRankings] = useState<any[]>([]);
+	const [rankings, setRankings] = useState<RankedCard[]>([]);
 	const [isComplete, setIsComplete] = useState(false);
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -35,11 +41,11 @@ export default function RankingPage({ params }: RankingPageProps) {
 		}
 
 		if (!currentSession || currentSession.packId !== resolvedParams.packId) {
-			const session = startSession({
+			const _session = startSession({
 				packId: resolvedParams.packId,
 				settings: getDefaultRankingSettings(),
 			});
-			
+
 			// Generate first comparison
 			generateNextComparison();
 		}
@@ -85,7 +91,13 @@ export default function RankingPage({ params }: RankingPageProps) {
 		updateCurrentRankings();
 
 		// Check if complete
-		if (isRankingComplete(pack!.cards, [...currentSession.comparisons, completedComparison], currentSession.settings)) {
+		if (
+			isRankingComplete(
+				pack?.cards,
+				[...currentSession.comparisons, completedComparison],
+				currentSession.settings
+			)
+		) {
 			completeRanking();
 		} else {
 			generateNextComparison();
@@ -131,9 +143,7 @@ export default function RankingPage({ params }: RankingPageProps) {
 			<div className="min-h-screen bg-background flex items-center justify-center">
 				<div className="text-center">
 					<h1 className="text-2xl font-bold mb-4">Pack not found</h1>
-					<Button onClick={() => router.push('/')}>
-						Go Home
-					</Button>
+					<Button onClick={() => router.push('/')}>Go Home</Button>
 				</div>
 			</div>
 		);
@@ -147,19 +157,15 @@ export default function RankingPage({ params }: RankingPageProps) {
 					<p className="text-muted-foreground mb-6">
 						You need at least 2 items to create a ranking
 					</p>
-					<Button onClick={() => router.push(`/create`)}>
-						Add More Items
-					</Button>
+					<Button onClick={() => router.push('/create')}>Add More Items</Button>
 				</div>
 			</div>
 		);
 	}
 
-	const progress = currentSession ? calculateProgress(
-		pack.cards,
-		currentSession.comparisons,
-		currentSession.settings
-	) : null;
+	const progress = currentSession
+		? calculateProgress(pack.cards, currentSession.comparisons, currentSession.settings)
+		: null;
 
 	return (
 		<div className="min-h-screen bg-background flex">
@@ -169,17 +175,12 @@ export default function RankingPage({ params }: RankingPageProps) {
 					{/* Header */}
 					<header className="mb-8">
 						<div className="flex items-center gap-4 mb-4">
-							<Button
-								variant="ghost"
-								onClick={() => router.push('/')}
-							>
+							<Button variant="ghost" onClick={() => router.push('/')}>
 								← Back to Packs
 							</Button>
 							<div>
 								<h1 className="text-3xl font-bold">{pack.name}</h1>
-								{pack.description && (
-									<p className="text-muted-foreground">{pack.description}</p>
-								)}
+								{pack.description && <p className="text-muted-foreground">{pack.description}</p>}
 							</div>
 						</div>
 					</header>
@@ -188,8 +189,18 @@ export default function RankingPage({ params }: RankingPageProps) {
 					{isComplete ? (
 						<div className="text-center py-12">
 							<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-								<svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+								<svg
+									className="w-8 h-8 text-primary"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
 								</svg>
 							</div>
 							<h2 className="text-2xl font-bold mb-4">Ranking Complete!</h2>
@@ -210,10 +221,14 @@ export default function RankingPage({ params }: RankingPageProps) {
 							comparison={currentComparison}
 							onSelect={handleComparisonSelect}
 							showProgress={true}
-							progress={progress ? {
-								current: progress.completedComparisons + 1,
-								total: progress.totalComparisons
-							} : undefined}
+							progress={
+								progress
+									? {
+											current: progress.completedComparisons + 1,
+											total: progress.totalComparisons,
+										}
+									: undefined
+							}
 						/>
 					) : (
 						<div className="text-center py-12">

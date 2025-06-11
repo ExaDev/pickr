@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SwipeableCard } from './SwipeableCard';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import type { Card, Comparison } from '../../types';
 import { Button } from '../ui/Button';
-import type { Comparison, Card } from '../../types';
+import { SwipeableCard } from './SwipeableCard';
 
 interface SwipeComparisonViewProps {
 	comparison: Comparison;
@@ -60,7 +60,7 @@ export function SwipeComparisonView({
 	const handleSelection = async (card: Card) => {
 		setIsSubmitting(true);
 		setShowInstructions(false);
-		
+
 		try {
 			onSelect(card);
 		} finally {
@@ -79,9 +79,7 @@ export function SwipeComparisonView({
 		setSelectedCard(null);
 	};
 
-	const progressPercentage = progress
-		? Math.round((progress.current / progress.total) * 100)
-		: 0;
+	const progressPercentage = progress ? Math.round((progress.current / progress.total) * 100) : 0;
 
 	return (
 		<div className="w-full max-w-6xl mx-auto space-y-6">
@@ -89,7 +87,9 @@ export function SwipeComparisonView({
 			{showProgress && progress && (
 				<div className="space-y-2">
 					<div className="flex justify-between text-sm text-muted-foreground">
-						<span>Comparison {progress.current} of {progress.total}</span>
+						<span>
+							Comparison {progress.current} of {progress.total}
+						</span>
 						<span>{progressPercentage}% complete</span>
 					</div>
 					<div className="w-full bg-secondary rounded-full h-2">
@@ -128,11 +128,11 @@ export function SwipeComparisonView({
 						key={card.id}
 						initial={{ opacity: 0, x: index === 0 ? -100 : 100 }}
 						animate={{ opacity: 1, x: 0 }}
-						transition={{ 
-							duration: 0.5, 
+						transition={{
+							duration: 0.5,
 							delay: index * 0.1,
 							type: 'spring',
-							stiffness: 100
+							stiffness: 100,
 						}}
 					>
 						<SwipeableCard
@@ -151,7 +151,7 @@ export function SwipeComparisonView({
 
 			{/* VS indicator */}
 			<div className="flex items-center justify-center">
-				<motion.div 
+				<motion.div
 					className="bg-muted text-muted-foreground px-6 py-3 rounded-full text-lg font-bold"
 					initial={{ scale: 0 }}
 					animate={{ scale: 1 }}
@@ -171,11 +171,7 @@ export function SwipeComparisonView({
 						exit={{ opacity: 0, y: 20 }}
 						transition={{ duration: 0.3 }}
 					>
-						<Button
-							variant="outline"
-							onClick={handleSkip}
-							disabled={disabled || isSubmitting}
-						>
+						<Button variant="outline" onClick={handleSkip} disabled={disabled || isSubmitting}>
 							Cancel
 						</Button>
 						<Button

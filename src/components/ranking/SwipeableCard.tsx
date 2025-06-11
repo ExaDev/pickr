@@ -1,9 +1,9 @@
 'use client';
 
+import { type PanInfo, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useState } from 'react';
-import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
-import { PickrCard } from '../cards/PickrCard';
 import type { Card } from '../../types';
+import { PickrCard } from '../cards/PickrCard';
 
 interface SwipeableCardProps {
 	card: Card;
@@ -26,7 +26,7 @@ export function SwipeableCard({
 }: SwipeableCardProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const [dragDirection, setDragDirection] = useState<'left' | 'right' | null>(null);
-	
+
 	const x = useMotionValue(0);
 	const rotate = useTransform(x, [-200, 0, 200], [-15, 0, 15]);
 	const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 0.8, 1, 0.8, 0.5]);
@@ -36,11 +36,11 @@ export function SwipeableCard({
 		setIsDragging(true);
 	};
 
-	const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+	const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
 		if (disabled) return;
-		
+
 		const currentX = info.offset.x;
-		
+
 		// Determine drag direction for visual feedback
 		if (Math.abs(currentX) > 20) {
 			setDragDirection(currentX > 0 ? 'right' : 'left');
@@ -49,18 +49,18 @@ export function SwipeableCard({
 		}
 	};
 
-	const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+	const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
 		if (disabled) return;
-		
+
 		setIsDragging(false);
 		setDragDirection(null);
-		
+
 		const swipeDistance = Math.abs(info.offset.x);
 		const swipeVelocity = Math.abs(info.velocity.x);
-		
+
 		// Determine if swipe is strong enough
 		const isStrongSwipe = swipeDistance > swipeThreshold || swipeVelocity > 500;
-		
+
 		if (isStrongSwipe) {
 			if (info.offset.x > 0) {
 				onSwipeRight?.();
@@ -68,7 +68,7 @@ export function SwipeableCard({
 				onSwipeLeft?.();
 			}
 		}
-		
+
 		// Reset position
 		x.set(0);
 	};
@@ -103,11 +103,12 @@ export function SwipeableCard({
 				card={card}
 				variant="comparison"
 				disabled={disabled}
-				className={`transition-all duration-200 ${
-					isDragging ? 'shadow-2xl' : 'shadow-lg'
-				} ${
-					dragDirection === 'right' ? 'ring-2 ring-green-400' :
-					dragDirection === 'left' ? 'ring-2 ring-red-400' : ''
+				className={`transition-all duration-200 ${isDragging ? 'shadow-2xl' : 'shadow-lg'} ${
+					dragDirection === 'right'
+						? 'ring-2 ring-green-400'
+						: dragDirection === 'left'
+							? 'ring-2 ring-red-400'
+							: ''
 				}`}
 			/>
 
@@ -118,14 +119,19 @@ export function SwipeableCard({
 					<motion.div
 						className="absolute inset-0 bg-red-500/20 rounded-lg flex items-center justify-start pl-8"
 						initial={{ opacity: 0 }}
-						animate={{ 
-							opacity: dragDirection === 'left' ? 1 : 0 
+						animate={{
+							opacity: dragDirection === 'left' ? 1 : 0,
 						}}
 						transition={{ duration: 0.2 }}
 					>
 						<div className="bg-red-500 text-white rounded-full p-3">
 							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M6 18L18 6M6 6l12 12"
+								/>
 							</svg>
 						</div>
 					</motion.div>
@@ -134,14 +140,19 @@ export function SwipeableCard({
 					<motion.div
 						className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-end pr-8"
 						initial={{ opacity: 0 }}
-						animate={{ 
-							opacity: dragDirection === 'right' ? 1 : 0 
+						animate={{
+							opacity: dragDirection === 'right' ? 1 : 0,
 						}}
 						transition={{ duration: 0.2 }}
 					>
 						<div className="bg-green-500 text-white rounded-full p-3">
 							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M5 13l4 4L19 7"
+								/>
 							</svg>
 						</div>
 					</motion.div>

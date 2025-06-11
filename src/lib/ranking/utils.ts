@@ -1,4 +1,4 @@
-import type { Card, Comparison, RankingSettings, RankingProgress } from '../../types';
+import type { Card, Comparison, RankingProgress, RankingSettings } from '../../types';
 import { getRankingAlgorithm } from './algorithms';
 
 /**
@@ -71,7 +71,10 @@ export function shuffleArray<T>(array: T[]): T[] {
 /**
  * Validate ranking settings
  */
-export function validateRankingSettings(settings: RankingSettings, cardCount: number): {
+export function validateRankingSettings(
+	settings: RankingSettings,
+	cardCount: number
+): {
 	isValid: boolean;
 	errors: string[];
 } {
@@ -120,7 +123,7 @@ export function formatComparison(comparison: Comparison): string {
 export function estimateSessionTime(
 	cardCount: number,
 	settings: RankingSettings,
-	averageComparisonTimeMs: number = 5000 // 5 seconds per comparison
+	averageComparisonTimeMs = 5000 // 5 seconds per comparison
 ): {
 	estimatedComparisons: number;
 	estimatedTimeMs: number;
@@ -132,7 +135,7 @@ export function estimateSessionTime(
 
 	const minutes = Math.floor(estimatedTimeMs / 60000);
 	const seconds = Math.floor((estimatedTimeMs % 60000) / 1000);
-	
+
 	let formatted = '';
 	if (minutes > 0) {
 		formatted += `${minutes}m `;

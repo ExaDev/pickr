@@ -56,7 +56,7 @@ export function PickrCard({
 			onClick={onClick && !disabled ? onClick : undefined}
 			role={onClick ? 'button' : undefined}
 			tabIndex={onClick && !disabled ? 0 : undefined}
-			onKeyDown={(e) => {
+			onKeyDown={e => {
 				if (onClick && !disabled && (e.key === 'Enter' || e.key === ' ')) {
 					e.preventDefault();
 					onClick();
@@ -66,22 +66,17 @@ export function PickrCard({
 			{/* Image section */}
 			{card.imageUrl && !imageError && (
 				<div className="relative mb-3 overflow-hidden rounded-md">
-					{imageLoading && (
-						<div className="absolute inset-0 bg-muted animate-pulse rounded-md" />
-					)}
+					{imageLoading && <div className="absolute inset-0 bg-muted animate-pulse rounded-md" />}
 					<img
 						src={card.imageUrl}
 						alt={card.content}
-						className={cn(
-							'w-full object-cover transition-opacity',
-							{
-								'h-32': variant === 'default',
-								'h-20': variant === 'compact',
-								'h-40': variant === 'comparison',
-								'opacity-0': imageLoading,
-								'opacity-100': !imageLoading,
-							}
-						)}
+						className={cn('w-full object-cover transition-opacity', {
+							'h-32': variant === 'default',
+							'h-20': variant === 'compact',
+							'h-40': variant === 'comparison',
+							'opacity-0': imageLoading,
+							'opacity-100': !imageLoading,
+						})}
 						onLoad={handleImageLoad}
 						onError={handleImageError}
 						loading="lazy"
@@ -92,13 +87,10 @@ export function PickrCard({
 			{/* Content section */}
 			<div className="flex-1">
 				<p
-					className={cn(
-						'text-sm font-medium leading-relaxed text-foreground',
-						{
-							'text-base': variant === 'comparison',
-							'text-xs': variant === 'compact',
-						}
-					)}
+					className={cn('text-sm font-medium leading-relaxed text-foreground', {
+						'text-base': variant === 'comparison',
+						'text-xs': variant === 'compact',
+					})}
 				>
 					{card.content}
 				</p>
@@ -113,12 +105,7 @@ export function PickrCard({
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M5 13l4 4L19 7"
-						/>
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
 					</svg>
 				</div>
 			)}

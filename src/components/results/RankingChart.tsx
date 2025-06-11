@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import type { RankedCard } from '../../types';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
-import type { RankedCard } from '../../types';
 
 interface RankingChartProps {
 	rankings: RankedCard[];
@@ -16,7 +16,7 @@ type ChartType = 'bar' | 'horizontal' | 'podium' | 'scatter';
 
 export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: RankingChartProps) {
 	const [chartType, setChartType] = useState<ChartType>('bar');
-	
+
 	const displayedRankings = rankings.slice(0, maxItems);
 	const maxScore = Math.max(...displayedRankings.map(r => r.score));
 
@@ -37,19 +37,27 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 
 	const getPodiumHeight = (rank: number) => {
 		switch (rank) {
-			case 1: return '120px';
-			case 2: return '100px';
-			case 3: return '80px';
-			default: return '60px';
+			case 1:
+				return '120px';
+			case 2:
+				return '100px';
+			case 3:
+				return '80px';
+			default:
+				return '60px';
 		}
 	};
 
 	const getPodiumColor = (rank: number) => {
 		switch (rank) {
-			case 1: return '#ffd700'; // Gold
-			case 2: return '#c0c0c0'; // Silver
-			case 3: return '#cd7f32'; // Bronze
-			default: return '#6b7280'; // Gray
+			case 1:
+				return '#ffd700'; // Gold
+			case 2:
+				return '#c0c0c0'; // Silver
+			case 3:
+				return '#cd7f32'; // Bronze
+			default:
+				return '#6b7280'; // Gray
 		}
 	};
 
@@ -70,17 +78,13 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 							animate={{ height: getBarHeight(ranking.score) }}
 							transition={{ duration: 0.8, delay: index * 0.1 }}
 						>
-							<span className="text-xs font-semibold text-primary-foreground">
-								{ranking.rank}
-							</span>
+							<span className="text-xs font-semibold text-primary-foreground">{ranking.rank}</span>
 						</motion.div>
 						<div className="text-xs text-center">
 							<div className="font-medium truncate max-w-[60px]" title={ranking.content}>
 								{ranking.content}
 							</div>
-							<div className="text-muted-foreground">
-								{Math.round(ranking.score * 100)}%
-							</div>
+							<div className="text-muted-foreground">{Math.round(ranking.score * 100)}%</div>
 						</div>
 					</motion.div>
 				))}
@@ -146,9 +150,9 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 							</div>
 							<div
 								className="w-20 rounded-t-lg flex items-center justify-center text-white font-bold text-lg"
-								style={{ 
+								style={{
 									height: getPodiumHeight(2),
-									backgroundColor: getPodiumColor(2)
+									backgroundColor: getPodiumColor(2),
 								}}
 							>
 								2
@@ -172,13 +176,12 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 							</div>
 							<div
 								className="w-20 rounded-t-lg flex items-center justify-center text-white font-bold text-xl relative"
-								style={{ 
+								style={{
 									height: getPodiumHeight(1),
-									backgroundColor: getPodiumColor(1)
+									backgroundColor: getPodiumColor(1),
 								}}
 							>
-								<div className="absolute -top-6 text-2xl">👑</div>
-								1
+								<div className="absolute -top-6 text-2xl">👑</div>1
 							</div>
 						</motion.div>
 					)}
@@ -199,9 +202,9 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 							</div>
 							<div
 								className="w-20 rounded-t-lg flex items-center justify-center text-white font-bold text-lg"
-								style={{ 
+								style={{
 									height: getPodiumHeight(3),
-									backgroundColor: getPodiumColor(3)
+									backgroundColor: getPodiumColor(3),
 								}}
 							>
 								3
@@ -249,7 +252,7 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 					{/* Axes */}
 					<div className="absolute bottom-4 left-4 right-4 border-t border-muted-foreground/30" />
 					<div className="absolute bottom-4 left-4 top-4 border-r border-muted-foreground/30" />
-					
+
 					{/* Axis labels */}
 					<div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs text-muted-foreground">
 						Wins
@@ -262,7 +265,7 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 					{displayedRankings.map((ranking, index) => {
 						const x = maxWins > 0 ? (ranking.wins / maxWins) * 80 : 0;
 						const y = maxLosses > 0 ? (ranking.losses / maxLosses) * 80 : 0;
-						
+
 						return (
 							<motion.div
 								key={ranking.id}
@@ -277,7 +280,8 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 								title={`${ranking.content}: ${ranking.wins}W-${ranking.losses}L`}
 							>
 								<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
-									{ranking.content}<br />
+									{ranking.content}
+									<br />
 									{ranking.wins}W - {ranking.losses}L
 								</div>
 							</motion.div>
@@ -290,11 +294,16 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 
 	const renderChart = () => {
 		switch (chartType) {
-			case 'bar': return <BarChart />;
-			case 'horizontal': return <HorizontalChart />;
-			case 'podium': return <PodiumChart />;
-			case 'scatter': return <ScatterChart />;
-			default: return <BarChart />;
+			case 'bar':
+				return <BarChart />;
+			case 'horizontal':
+				return <HorizontalChart />;
+			case 'podium':
+				return <PodiumChart />;
+			case 'scatter':
+				return <ScatterChart />;
+			default:
+				return <BarChart />;
 		}
 	};
 
@@ -309,7 +318,7 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 						</CardDescription>
 					</div>
 					<div className="flex gap-2">
-						{chartTypes.map((type) => (
+						{chartTypes.map(type => (
 							<Button
 								key={type.type}
 								variant={chartType === type.type ? 'default' : 'outline'}
@@ -324,9 +333,7 @@ export function RankingChart({ rankings, title = 'Rankings', maxItems = 10 }: Ra
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent>
-				{renderChart()}
-			</CardContent>
+			<CardContent>{renderChart()}</CardContent>
 		</Card>
 	);
 }

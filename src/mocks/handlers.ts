@@ -22,7 +22,7 @@ export const handlers = [
 	// Mock ranking result sharing
 	http.post('/api/rankings/share', async ({ request }) => {
 		const body = await request.json();
-		const ranking = body as RankingShareRequestBody;
+		const _ranking = body as RankingShareRequestBody;
 
 		// Simulate processing delay
 		await new Promise(resolve => setTimeout(resolve, 500));
@@ -65,7 +65,7 @@ export const handlers = [
 	// Mock pack sharing
 	http.post('/api/packs/share', async ({ request }) => {
 		const body = await request.json();
-		const pack = body as PackShareRequestBody;
+		const _pack = body as PackShareRequestBody;
 
 		await new Promise(resolve => setTimeout(resolve, 400));
 

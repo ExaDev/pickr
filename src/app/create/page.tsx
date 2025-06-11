@@ -1,19 +1,25 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCardsStore } from '../../store';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
+import { useState } from 'react';
 import { CardForm } from '../../components/cards/CardForm';
 import { PickrCard } from '../../components/cards/PickrCard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '../../components/ui/Card';
+import { Input } from '../../components/ui/Input';
+import { useCardsStore } from '../../store';
 import type { CardInput } from '../../types';
 
 export default function CreatePackPage() {
 	const router = useRouter();
 	const { addPack, addCardToPack } = useCardsStore();
-	
+
 	const [packName, setPackName] = useState('');
 	const [packDescription, setPackDescription] = useState('');
 	const [cards, setCards] = useState<CardInput[]>([]);
@@ -62,10 +68,7 @@ export default function CreatePackPage() {
 				{/* Header */}
 				<header className="mb-8">
 					<div className="flex items-center gap-4 mb-4">
-						<Button
-							variant="ghost"
-							onClick={() => router.back()}
-						>
+						<Button variant="ghost" onClick={() => router.back()}>
 							← Back
 						</Button>
 						<div>
@@ -82,9 +85,7 @@ export default function CreatePackPage() {
 						<Card>
 							<CardHeader>
 								<CardTitle>Pack Details</CardTitle>
-								<CardDescription>
-									Give your pack a name and description
-								</CardDescription>
+								<CardDescription>Give your pack a name and description</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="space-y-2">
@@ -94,7 +95,7 @@ export default function CreatePackPage() {
 									<Input
 										id="pack-name"
 										value={packName}
-										onChange={(e) => setPackName(e.target.value)}
+										onChange={e => setPackName(e.target.value)}
 										placeholder="e.g., Best Movies of 2023"
 										maxLength={100}
 										required
@@ -107,7 +108,7 @@ export default function CreatePackPage() {
 									<Input
 										id="pack-description"
 										value={packDescription}
-										onChange={(e) => setPackDescription(e.target.value)}
+										onChange={e => setPackDescription(e.target.value)}
 										placeholder="A brief description of what you're ranking"
 										maxLength={200}
 									/>
@@ -151,8 +152,11 @@ export default function CreatePackPage() {
 							</Button>
 							{!canCreate && (
 								<p className="text-sm text-muted-foreground">
-									{!packName.trim() ? 'Add a pack name' : 
-									 cards.length < 2 ? `Add ${2 - cards.length} more item${2 - cards.length === 1 ? '' : 's'}` : ''}
+									{!packName.trim()
+										? 'Add a pack name'
+										: cards.length < 2
+											? `Add ${2 - cards.length} more item${2 - cards.length === 1 ? '' : 's'}`
+											: ''}
 								</p>
 							)}
 						</div>
@@ -163,16 +167,24 @@ export default function CreatePackPage() {
 						<Card>
 							<CardHeader>
 								<CardTitle>Preview ({cards.length} items)</CardTitle>
-								<CardDescription>
-									Items you've added so far
-								</CardDescription>
+								<CardDescription>Items you've added so far</CardDescription>
 							</CardHeader>
 							<CardContent>
 								{cards.length === 0 ? (
 									<div className="text-center py-12 text-muted-foreground">
 										<div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-											<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+											<svg
+												className="w-6 h-6"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+												/>
 											</svg>
 										</div>
 										<p className="text-sm">No items added yet</p>
@@ -197,8 +209,18 @@ export default function CreatePackPage() {
 													className="absolute top-2 right-2 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity"
 													onClick={() => handleRemoveCard(index)}
 												>
-													<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+													<svg
+														className="w-3 h-3"
+														fill="none"
+														stroke="currentColor"
+														viewBox="0 0 24 24"
+													>
+														<path
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															strokeWidth={2}
+															d="M6 18L18 6M6 6l12 12"
+														/>
 													</svg>
 												</Button>
 											</div>

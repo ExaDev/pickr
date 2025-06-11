@@ -1,17 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
+	ComparisonAnalysis,
+	PacoData,
+	RankedCard,
 	RankingResult,
 	ResultInput,
-	PacoData,
-	ComparisonAnalysis,
-	RankedCard,
 } from '../types';
 
 interface ResultsState {
 	results: RankingResult[];
 	currentResult: RankingResult | null;
-	
+
 	// Result management
 	addResult: (result: ResultInput) => RankingResult;
 	updateResult: (id: string, updates: Partial<RankingResult>) => void;
@@ -19,14 +19,14 @@ interface ResultsState {
 	setCurrentResult: (result: RankingResult | null) => void;
 	getResultById: (id: string) => RankingResult | undefined;
 	getResultsByPackId: (packId: string) => RankingResult[];
-	
+
 	// Paco encoding/decoding
 	generatePacoCode: (resultId: string) => string | null;
 	decodePacoCode: (pacoCode: string) => PacoData | null;
-	
+
 	// Analysis functions
 	compareResults: (resultIds: string[]) => ComparisonAnalysis | null;
-	
+
 	// Utility functions
 	clearAllResults: () => void;
 }
@@ -37,12 +37,16 @@ const generateId = () => crypto.randomUUID();
 const encodePaco = (data: PacoData): string => {
 	try {
 		const jsonString = JSON.stringify(data);
-		return btoa(jsonString).replace(/[+/=]/g, (char) => {
+		return btoa(jsonString).replace(/[+/=]/g, char => {
 			switch (char) {
-				case '+': return '-';
-				case '/': return '_';
-				case '=': return '';
-				default: return char;
+				case '+':
+					return '-';
+				case '/':
+					return '_';
+				case '=':
+					return '';
+				default:
+					return char;
 			}
 		});
 	} catch {
@@ -53,16 +57,19 @@ const encodePaco = (data: PacoData): string => {
 const decodePaco = (pacoCode: string): PacoData | null => {
 	try {
 		// Reverse the character replacements
-		const base64 = pacoCode.replace(/[-_]/g, (char) => {
+		const base64 = pacoCode.replace(/[-_]/g, char => {
 			switch (char) {
-				case '-': return '+';
-				case '_': return '/';
-				default: return char;
+				case '-':
+					return '+';
+				case '_':
+					return '/';
+				default:
+					return char;
 			}
 		});
-		
+
 		// Add padding if needed
-		const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
+		const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
 		const jsonString = atob(padded);
 		return JSON.parse(jsonString);
 	} catch {
@@ -83,7 +90,7 @@ export const useResultsStore = create<ResultsState>()(
 					createdAt: new Date(),
 				};
 
-				set((state) => ({
+				set(state => ({
 					results: [...state.results, newResult],
 				}));
 
@@ -91,8 +98,8 @@ export const useResultsStore = create<ResultsState>()(
 			},
 
 			updateResult: (id: string, updates: Partial<RankingResult>) => {
-				set((state) => ({
-					results: state.results.map((result) =>
+				set(state => ({
+					results: state.results.map(result =>
 						result.id === id ? { ...result, ...updates } : result
 					),
 					currentResult:
@@ -103,8 +110,8 @@ export const useResultsStore = create<ResultsState>()(
 			},
 
 			deleteResult: (id: string) => {
-				set((state) => ({
-					results: state.results.filter((result) => result.id !== id),
+				set(state => ({
+					results: state.results.filter(result => result.id !== id),
 					currentResult: state.currentResult?.id === id ? null : state.currentResult,
 				}));
 			},
@@ -114,11 +121,11 @@ export const useResultsStore = create<ResultsState>()(
 			},
 
 			getResultById: (id: string) => {
-				return get().results.find((result) => result.id === id);
+				return get().results.find(result => result.id === id);
 			},
 
 			getResultsByPackId: (packId: string) => {
-				return get().results.filter((result) => result.packId === packId);
+				return get().results.filter(result => result.packId === packId);
 			},
 
 			generatePacoCode: (resultId: string) => {
@@ -136,10 +143,10 @@ export const useResultsStore = create<ResultsState>()(
 				};
 
 				const pacoCode = encodePaco(pacoData);
-				
+
 				// Update result with paco code
 				get().updateResult(resultId, { pacoCode });
-				
+
 				return pacoCode;
 			},
 
@@ -149,21 +156,21 @@ export const useResultsStore = create<ResultsState>()(
 
 			compareResults: (resultIds: string[]) => {
 				const results = resultIds
-					.map((id) => get().getResultById(id))
+					.map(id => get().getResultById(id))
 					.filter((result): result is RankingResult => result !== undefined);
 
 				if (results.length < 2) return null;
 
 				// Simple comparison analysis
 				const allCards = new Map<string, RankedCard[]>();
-				
+
 				// Collect all rankings for each card
-				results.forEach((result) => {
-					result.rankings.forEach((rankedCard) => {
+				results.forEach(result => {
+					result.rankings.forEach(rankedCard => {
 						if (!allCards.has(rankedCard.id)) {
 							allCards.set(rankedCard.id, []);
 						}
-						allCards.get(rankedCard.id)!.push(rankedCard);
+						allCards.get(rankedCard.id)?.push(rankedCard);
 					});
 				});
 
@@ -171,11 +178,11 @@ export const useResultsStore = create<ResultsState>()(
 				const consensus: RankedCard[] = [];
 				const disagreements: ComparisonAnalysis['disagreements'] = [];
 
-				allCards.forEach((rankings, cardId) => {
+				allCards.forEach((rankings, _cardId) => {
 					if (rankings.length === results.length) {
 						const avgRank = rankings.reduce((sum, r) => sum + r.rank, 0) / rankings.length;
 						const avgScore = rankings.reduce((sum, r) => sum + r.score, 0) / rankings.length;
-						
+
 						// Use the first card as template
 						const baseCard = rankings[0];
 						consensus.push({
@@ -187,11 +194,12 @@ export const useResultsStore = create<ResultsState>()(
 						});
 
 						// Check for disagreements (rank variance > 2)
-						const rankVariance = Math.max(...rankings.map(r => r.rank)) - Math.min(...rankings.map(r => r.rank));
+						const rankVariance =
+							Math.max(...rankings.map(r => r.rank)) - Math.min(...rankings.map(r => r.rank));
 						if (rankVariance > 2) {
 							// Find conflicting pairs (simplified)
 							rankings.forEach((rank1, i) => {
-								rankings.slice(i + 1).forEach((rank2) => {
+								rankings.slice(i + 1).forEach(rank2 => {
 									if (Math.abs(rank1.rank - rank2.rank) > 2) {
 										disagreements.push({
 											card1: rank1,
@@ -209,9 +217,9 @@ export const useResultsStore = create<ResultsState>()(
 				consensus.sort((a, b) => a.rank - b.rank);
 
 				// Calculate overall agreement (simplified)
-				const totalPossibleAgreements = allCards.size * (allCards.size - 1) / 2;
+				const totalPossibleAgreements = (allCards.size * (allCards.size - 1)) / 2;
 				const actualDisagreements = disagreements.length;
-				const agreement = Math.max(0, 1 - (actualDisagreements / totalPossibleAgreements));
+				const agreement = Math.max(0, 1 - actualDisagreements / totalPossibleAgreements);
 
 				return {
 					agreement,

@@ -1,21 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { decodeFromPaco, validatePacoCode } from '../../../lib/paco/encoding';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { PickrCard } from '../../../components/cards/PickrCard';
 import { RankingChart } from '../../../components/results/RankingChart';
 import { Button } from '../../../components/ui/Button';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '../../../components/ui/Card';
 import { Input } from '../../../components/ui/Input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/Card';
+import { decodeFromPaco, validatePacoCode } from '../../../lib/paco/encoding';
 import { formatDate } from '../../../lib/utils';
 import type { PacoData } from '../../../types';
 
 export default function SharedResultsPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	
+
 	const [pacoCode, setPacoCode] = useState('');
 	const [result, setResult] = useState<PacoData | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -108,11 +114,11 @@ export default function SharedResultsPage() {
 								<form onSubmit={handleSubmit} className="space-y-4">
 									<Input
 										value={pacoCode}
-										onChange={(e) => setPacoCode(e.target.value)}
+										onChange={e => setPacoCode(e.target.value)}
 										placeholder="Enter sharing code (e.g., p_ABC123...)"
 										className="font-mono"
 									/>
-									
+
 									{error && (
 										<div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
 											<p className="text-sm text-destructive">{error}</p>
@@ -140,11 +146,10 @@ export default function SharedResultsPage() {
 						transition={{ duration: 0.5, delay: 0.4 }}
 					>
 						<p className="mb-2">
-							Sharing codes are generated when someone completes a ranking and chooses to share their results.
+							Sharing codes are generated when someone completes a ranking and chooses to share
+							their results.
 						</p>
-						<p>
-							The code contains all the ranking data in a compact, shareable format.
-						</p>
+						<p>The code contains all the ranking data in a compact, shareable format.</p>
 					</motion.div>
 				</div>
 			</div>
@@ -162,13 +167,25 @@ export default function SharedResultsPage() {
 						transition={{ duration: 0.5 }}
 					>
 						<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-							<svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+							<svg
+								className="w-8 h-8 text-primary"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<title>Share results icon</title>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+								/>
 							</svg>
 						</div>
 						<h1 className="text-4xl font-bold mb-4">Shared Ranking Results</h1>
 						<p className="text-xl text-muted-foreground">
-							Results from {result.rankings.length} items ranked on {formatDate(result.metadata.timestamp)}
+							Results from {result.rankings.length} items ranked on{' '}
+							{formatDate(result.metadata.timestamp)}
 						</p>
 					</motion.div>
 				</header>
@@ -223,12 +240,17 @@ export default function SharedResultsPage() {
 							>
 								{/* Rank */}
 								<div className="flex-shrink-0">
-									<div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
-										rankedCard.rank === 1 ? 'bg-yellow-500 text-white' :
-										rankedCard.rank === 2 ? 'bg-gray-400 text-white' :
-										rankedCard.rank === 3 ? 'bg-orange-600 text-white' :
-										'bg-muted text-muted-foreground'
-									}`}>
+									<div
+										className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
+											rankedCard.rank === 1
+												? 'bg-yellow-500 text-white'
+												: rankedCard.rank === 2
+													? 'bg-gray-400 text-white'
+													: rankedCard.rank === 3
+														? 'bg-orange-600 text-white'
+														: 'bg-muted text-muted-foreground'
+										}`}
+									>
 										{rankedCard.rank}
 									</div>
 								</div>

@@ -1,9 +1,14 @@
-import { useState, useRef } from 'react';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { validateImageFile, processImage, generateThumbnail, ImageStorage } from '../../lib/image-utils';
+import { useRef, useState } from 'react';
+import {
+	ImageStorage,
+	generateThumbnail,
+	processImage,
+	validateImageFile,
+} from '../../lib/image-utils';
 import { generateId } from '../../lib/utils';
 import type { CardInput } from '../../types';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
 
 interface CardFormProps {
 	onSubmit: (card: CardInput) => void;
@@ -40,7 +45,7 @@ export function CardForm({
 		}
 
 		setIsProcessingImage(true);
-		
+
 		try {
 			// Generate thumbnail for preview
 			const thumbnail = await generateThumbnail(file, 200);
@@ -64,23 +69,23 @@ export function CardForm({
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		
+
 		if (!content.trim()) {
 			return;
 		}
 
 		try {
 			let imageUrl: string | undefined;
-			
+
 			// Process and store image if provided
 			if (imageFile) {
 				const processed = await processImage(imageFile, {
 					maxWidth: 800,
 					maxHeight: 600,
 					quality: 0.8,
-					format: 'jpeg'
+					format: 'jpeg',
 				});
-				
+
 				// Store image with unique ID
 				const imageId = generateId();
 				await ImageStorage.storeImage(imageId, processed.dataUrl);
@@ -93,7 +98,7 @@ export function CardForm({
 			};
 
 			onSubmit(cardInput);
-			
+
 			// Reset form
 			setContent('');
 			setImageFile(null);
@@ -154,7 +159,7 @@ export function CardForm({
 			<div className="space-y-2">
 				<Input
 					value={content}
-					onChange={(e) => setContent(e.target.value)}
+					onChange={e => setContent(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder={placeholder}
 					disabled={disabled}
@@ -189,35 +194,19 @@ export function CardForm({
 							Processing...
 						</>
 					) : (
-						<>
-							{imageFile ? 'Change Image' : 'Add Image'}
-						</>
+						<>{imageFile ? 'Change Image' : 'Add Image'}</>
 					)}
 				</Button>
-				{imageFile && (
-					<span className="text-sm text-muted-foreground">
-						{imageFile.name}
-					</span>
-				)}
+				{imageFile && <span className="text-sm text-muted-foreground">{imageFile.name}</span>}
 			</div>
 
 			{/* Actions */}
 			<div className="flex items-center gap-2">
-				<Button
-					type="submit"
-					disabled={disabled || !content.trim()}
-					size="sm"
-				>
+				<Button type="submit" disabled={disabled || !content.trim()} size="sm">
 					Add Card
 				</Button>
 				{onCancel && (
-					<Button
-						type="button"
-						variant="outline"
-						size="sm"
-						onClick={onCancel}
-						disabled={disabled}
-					>
+					<Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={disabled}>
 						Cancel
 					</Button>
 				)}

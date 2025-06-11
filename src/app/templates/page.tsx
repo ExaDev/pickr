@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Button } from '../../components/ui/Button';
 import { TemplateBrowser } from '../../components/templates/TemplateBrowser';
+import { Button } from '../../components/ui/Button';
 
 export default function TemplatesPage() {
 	const router = useRouter();
@@ -20,21 +20,14 @@ export default function TemplatesPage() {
 					>
 						<h1 className="text-4xl font-bold mb-4">Pack Templates</h1>
 						<p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-							Choose from hundreds of pre-made ranking templates or create your own. 
-							Get started instantly with curated lists across every category.
+							Choose from hundreds of pre-made ranking templates or create your own. Get started
+							instantly with curated lists across every category.
 						</p>
 						<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-							<Button 
-								onClick={() => router.push('/create')}
-								size="lg"
-							>
+							<Button onClick={() => router.push('/create')} size="lg">
 								Create Custom Pack
 							</Button>
-							<Button 
-								variant="outline" 
-								onClick={() => router.push('/')}
-								size="lg"
-							>
+							<Button variant="outline" onClick={() => router.push('/')} size="lg">
 								← Back to Home
 							</Button>
 						</div>
@@ -47,10 +40,7 @@ export default function TemplatesPage() {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.2 }}
 				>
-					<TemplateBrowser 
-						showSearch={true}
-						showCategories={true}
-					/>
+					<TemplateBrowser showSearch={true} showCategories={true} />
 				</motion.div>
 
 				{/* Bottom CTA */}
@@ -62,21 +52,14 @@ export default function TemplatesPage() {
 				>
 					<h2 className="text-2xl font-semibold mb-4">Can't find what you're looking for?</h2>
 					<p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-						Create your own custom pack with items you want to rank. 
-						You can add text, images, and organize them however you like.
+						Create your own custom pack with items you want to rank. You can add text, images, and
+						organize them however you like.
 					</p>
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-						<Button 
-							onClick={() => router.push('/create')}
-							size="lg"
-						>
+						<Button onClick={() => router.push('/create')} size="lg">
 							Create Custom Pack
 						</Button>
-						<Button 
-							variant="outline"
-							onClick={() => router.push('/results/shared')}
-							size="lg"
-						>
+						<Button variant="outline" onClick={() => router.push('/results/shared')} size="lg">
 							View Shared Results
 						</Button>
 					</div>

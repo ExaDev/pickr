@@ -31,4 +31,7 @@ export interface RankingProgress {
 }
 
 export type ComparisonInput = Omit<Comparison, 'id' | 'timestamp'>;
-export type RankingSessionInput = Omit<RankingSession, 'id' | 'createdAt' | 'updatedAt' | 'comparisons' | 'isComplete'>;
+export type RankingSessionInput = Omit<
+	RankingSession,
+	'id' | 'createdAt' | 'updatedAt' | 'comparisons' | 'isComplete'
+>;

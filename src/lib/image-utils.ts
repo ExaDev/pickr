@@ -24,12 +24,7 @@ export async function processImage(
 	file: File,
 	options: ImageProcessingOptions = {}
 ): Promise<ProcessedImage> {
-	const {
-		maxWidth = 800,
-		maxHeight = 600,
-		quality = 0.8,
-		format = 'jpeg'
-	} = options;
+	const { maxWidth = 800, maxHeight = 600, quality = 0.8, format = 'jpeg' } = options;
 
 	return new Promise((resolve, reject) => {
 		const canvas = document.createElement('canvas');
@@ -39,10 +34,10 @@ export async function processImage(
 		img.onload = () => {
 			// Calculate new dimensions
 			let { width, height } = img;
-			
+
 			if (width > maxWidth || height > maxHeight) {
 				const aspectRatio = width / height;
-				
+
 				if (width > height) {
 					width = maxWidth;
 					height = width / aspectRatio;
@@ -58,16 +53,16 @@ export async function processImage(
 
 			// Draw and compress image
 			ctx?.drawImage(img, 0, 0, width, height);
-			
+
 			canvas.toBlob(
-				(blob) => {
+				blob => {
 					if (!blob) {
 						reject(new Error('Failed to process image'));
 						return;
 					}
 
 					const dataUrl = canvas.toDataURL(`image/${format}`, quality);
-					
+
 					resolve({
 						dataUrl,
 						blob,
@@ -140,7 +135,7 @@ export function getImageDimensions(file: File): Promise<{ width: number; height:
 export function fileToDataUrl(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		reader.onload = (e) => resolve(e.target?.result as string);
+		reader.onload = e => resolve(e.target?.result as string);
 		reader.onerror = () => reject(new Error('Failed to read file'));
 		reader.readAsDataURL(file);
 	});
@@ -149,17 +144,14 @@ export function fileToDataUrl(file: File): Promise<string> {
 /**
  * Generate thumbnail from image
  */
-export async function generateThumbnail(
-	file: File,
-	size: number = 150
-): Promise<string> {
+export async function generateThumbnail(file: File, size = 150): Promise<string> {
 	const processed = await processImage(file, {
 		maxWidth: size,
 		maxHeight: size,
 		quality: 0.7,
-		format: 'jpeg'
+		format: 'jpeg',
 	});
-	
+
 	return processed.dataUrl;
 }
 
@@ -167,10 +159,11 @@ export async function generateThumbnail(
  * Check if browser supports WebP format
  */
 export function supportsWebP(): Promise<boolean> {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		const webP = new Image();
 		webP.onload = webP.onerror = () => resolve(webP.height === 2);
-		webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+		webP.src =
+			'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
 	});
 }
 
@@ -186,16 +179,16 @@ export class ImageStorage {
 	 */
 	static async storeImage(id: string, dataUrl: string): Promise<void> {
 		try {
-			const storage = this.getStorage();
+			const storage = ImageStorage.getStorage();
 			storage[id] = dataUrl;
-			
+
 			// Check storage size
-			const totalSize = this.calculateStorageSize(storage);
-			if (totalSize > this.MAX_STORAGE_SIZE) {
+			const totalSize = ImageStorage.calculateStorageSize(storage);
+			if (totalSize > ImageStorage.MAX_STORAGE_SIZE) {
 				throw new Error('Storage limit exceeded');
 			}
-			
-			localStorage.setItem(this.STORAGE_KEY, JSON.stringify(storage));
+
+			localStorage.setItem(ImageStorage.STORAGE_KEY, JSON.stringify(storage));
 		} catch (error) {
 			console.error('Failed to store image:', error);
 			throw error;
@@ -207,7 +200,7 @@ export class ImageStorage {
 	 */
 	static getImage(id: string): string | null {
 		try {
-			const storage = this.getStorage();
+			const storage = ImageStorage.getStorage();
 			return storage[id] || null;
 		} catch (error) {
 			console.error('Failed to retrieve image:', error);
@@ -220,9 +213,9 @@ export class ImageStorage {
 	 */
 	static removeImage(id: string): void {
 		try {
-			const storage = this.getStorage();
+			const storage = ImageStorage.getStorage();
 			delete storage[id];
-			localStorage.setItem(this.STORAGE_KEY, JSON.stringify(storage));
+			localStorage.setItem(ImageStorage.STORAGE_KEY, JSON.stringify(storage));
 		} catch (error) {
 			console.error('Failed to remove image:', error);
 		}
@@ -232,20 +225,20 @@ export class ImageStorage {
 	 * Clear all stored images
 	 */
 	static clearAll(): void {
-		localStorage.removeItem(this.STORAGE_KEY);
+		localStorage.removeItem(ImageStorage.STORAGE_KEY);
 	}
 
 	/**
 	 * Get current storage size in bytes
 	 */
 	static getStorageSize(): number {
-		const storage = this.getStorage();
-		return this.calculateStorageSize(storage);
+		const storage = ImageStorage.getStorage();
+		return ImageStorage.calculateStorageSize(storage);
 	}
 
 	private static getStorage(): Record<string, string> {
 		try {
-			const data = localStorage.getItem(this.STORAGE_KEY);
+			const data = localStorage.getItem(ImageStorage.STORAGE_KEY);
 			return data ? JSON.parse(data) : {};
 		} catch {
 			return {};
@@ -254,7 +247,7 @@ export class ImageStorage {
 
 	private static calculateStorageSize(storage: Record<string, string>): number {
 		return Object.values(storage).reduce((total, dataUrl) => {
-			return total + (dataUrl.length * 0.75); // Approximate bytes (base64 overhead)
+			return total + dataUrl.length * 0.75; // Approximate bytes (base64 overhead)
 		}, 0);
 	}
 }

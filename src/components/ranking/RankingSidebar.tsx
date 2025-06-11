@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from '../ui/Button';
-import { PickrCard } from '../cards/PickrCard';
 import type { RankedCard } from '../../types';
+import { PickrCard } from '../cards/PickrCard';
+import { Button } from '../ui/Button';
 
 interface RankingSidebarProps {
 	rankings: RankedCard[];
@@ -30,12 +30,7 @@ export function RankingSidebar({
 					onClick={onToggleCollapse}
 					className="rounded-full shadow-lg"
 				>
-					<svg
-						className="w-4 h-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
+					<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -52,31 +47,15 @@ export function RankingSidebar({
 		<div className="w-80 bg-card border-l shadow-sm">
 			<div className="sticky top-0 bg-card border-b p-4 flex items-center justify-between">
 				<div>
-					<h3 className="font-semibold">
-						{isComplete ? 'Final Rankings' : 'Current Rankings'}
-					</h3>
+					<h3 className="font-semibold">{isComplete ? 'Final Rankings' : 'Current Rankings'}</h3>
 					<p className="text-sm text-muted-foreground">
 						{rankings.length} item{rankings.length !== 1 ? 's' : ''}
 					</p>
 				</div>
 				{onToggleCollapse && (
-					<Button
-						variant="ghost"
-						size="icon"
-						onClick={onToggleCollapse}
-					>
-						<svg
-							className="w-4 h-4"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M9 5l7 7-7 7"
-							/>
+					<Button variant="ghost" size="icon" onClick={onToggleCollapse}>
+						<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
 						</svg>
 					</Button>
 				)}
@@ -84,7 +63,7 @@ export function RankingSidebar({
 
 			<div className="overflow-y-auto max-h-screen pb-20">
 				<div className="p-4 space-y-3">
-					{displayedRankings.map((rankedCard, index) => (
+					{displayedRankings.map((rankedCard, _index) => (
 						<div
 							key={rankedCard.id}
 							className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 transition-colors"
@@ -96,9 +75,7 @@ export function RankingSidebar({
 
 							{/* Card preview */}
 							<div className="flex-1 min-w-0">
-								<div className="text-sm font-medium truncate">
-									{rankedCard.content}
-								</div>
+								<div className="text-sm font-medium truncate">{rankedCard.content}</div>
 								<div className="text-xs text-muted-foreground">
 									{rankedCard.wins}W - {rankedCard.losses}L
 									{rankedCard.ties && rankedCard.ties > 0 && ` - ${rankedCard.ties}T`}
@@ -107,9 +84,7 @@ export function RankingSidebar({
 
 							{/* Score indicator */}
 							<div className="flex-shrink-0 text-right">
-								<div className="text-sm font-medium">
-									{Math.round(rankedCard.score * 100)}%
-								</div>
+								<div className="text-sm font-medium">{Math.round(rankedCard.score * 100)}%</div>
 							</div>
 						</div>
 					))}
@@ -130,12 +105,7 @@ export function RankingSidebar({
 					{rankings.length === 0 && (
 						<div className="text-center text-muted-foreground py-8">
 							<div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-								<svg
-									className="w-6 h-6"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
+								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"

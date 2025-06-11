@@ -1,7 +1,7 @@
 import { formatRelativeTime } from '../../lib/utils';
+import type { Pack } from '../../types';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
-import type { Pack } from '../../types';
 
 interface PackGridProps {
 	packs: Pack[];
@@ -56,21 +56,15 @@ export function PackGrid({
 					</svg>
 				</div>
 				<h3 className="text-lg font-semibold mb-2">No packs yet</h3>
-				<p className="text-muted-foreground mb-6">
-					Create your first pack to start ranking items
-				</p>
-				{onCreatePack && (
-					<Button onClick={onCreatePack}>
-						Create Your First Pack
-					</Button>
-				)}
+				<p className="text-muted-foreground mb-6">Create your first pack to start ranking items</p>
+				{onCreatePack && <Button onClick={onCreatePack}>Create Your First Pack</Button>}
 			</div>
 		);
 	}
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{packs.map((pack) => (
+			{packs.map(pack => (
 				<Card
 					key={pack.id}
 					className="cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] group"
@@ -92,18 +86,13 @@ export function PackGrid({
 								<Button
 									variant="ghost"
 									size="icon"
-									onClick={(e) => {
+									onClick={e => {
 										e.stopPropagation();
 										onDeletePack(pack.id);
 									}}
 									className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0"
 								>
-									<svg
-										className="w-4 h-4"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -119,12 +108,7 @@ export function PackGrid({
 						{/* Stats */}
 						<div className="flex items-center gap-4 text-sm text-muted-foreground">
 							<div className="flex items-center gap-1">
-								<svg
-									className="w-4 h-4"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
+								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
@@ -134,9 +118,7 @@ export function PackGrid({
 								</svg>
 								<span>{pack.cards.length} cards</span>
 							</div>
-							<div className="text-xs">
-								{formatRelativeTime(pack.updatedAt)}
-							</div>
+							<div className="text-xs">{formatRelativeTime(pack.updatedAt)}</div>
 						</div>
 
 						{/* Card preview */}
@@ -150,9 +132,7 @@ export function PackGrid({
 										</div>
 									))}
 									{pack.cards.length > 2 && (
-										<div className="text-muted-foreground">
-											+{pack.cards.length - 2} more...
-										</div>
+										<div className="text-muted-foreground">+{pack.cards.length - 2} more...</div>
 									)}
 								</div>
 							</div>
@@ -160,9 +140,7 @@ export function PackGrid({
 
 						{/* Action hint */}
 						<div className="pt-2 border-t">
-							<p className="text-xs text-muted-foreground">
-								Click to start ranking →
-							</p>
+							<p className="text-xs text-muted-foreground">Click to start ranking →</p>
 						</div>
 					</CardContent>
 				</Card>
@@ -191,9 +169,7 @@ export function PackGrid({
 							</svg>
 						</div>
 						<h3 className="font-semibold text-lg mb-2">Create New Pack</h3>
-						<p className="text-muted-foreground text-sm">
-							Add items to rank and compare
-						</p>
+						<p className="text-muted-foreground text-sm">Add items to rank and compare</p>
 					</CardContent>
 				</Card>
 			)}

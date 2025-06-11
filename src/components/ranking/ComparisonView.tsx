@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import type { Card, Comparison } from '../../types';
 import { PickrCard } from '../cards/PickrCard';
 import { Button } from '../ui/Button';
-import type { Comparison, Card } from '../../types';
 
 interface ComparisonViewProps {
 	comparison: Comparison;
@@ -31,7 +31,7 @@ export function ComparisonView({
 
 	const handleConfirm = async () => {
 		if (!selectedCard || disabled || isSubmitting) return;
-		
+
 		setIsSubmitting(true);
 		try {
 			onSelect(selectedCard);
@@ -46,9 +46,7 @@ export function ComparisonView({
 		setSelectedCard(null);
 	};
 
-	const progressPercentage = progress
-		? Math.round((progress.current / progress.total) * 100)
-		: 0;
+	const progressPercentage = progress ? Math.round((progress.current / progress.total) * 100) : 0;
 
 	return (
 		<div className="w-full max-w-4xl mx-auto space-y-6">
@@ -56,7 +54,9 @@ export function ComparisonView({
 			{showProgress && progress && (
 				<div className="space-y-2">
 					<div className="flex justify-between text-sm text-muted-foreground">
-						<span>Comparison {progress.current} of {progress.total}</span>
+						<span>
+							Comparison {progress.current} of {progress.total}
+						</span>
 						<span>{progressPercentage}% complete</span>
 					</div>
 					<div className="w-full bg-secondary rounded-full h-2">
@@ -78,7 +78,7 @@ export function ComparisonView({
 
 			{/* Cards comparison */}
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-				{comparison.cards.map((card) => (
+				{comparison.cards.map(card => (
 					<PickrCard
 						key={card.id}
 						card={card}
@@ -100,11 +100,7 @@ export function ComparisonView({
 
 			{/* Action buttons */}
 			<div className="flex items-center justify-center gap-4">
-				<Button
-					variant="outline"
-					onClick={handleSkip}
-					disabled={disabled || isSubmitting}
-				>
+				<Button variant="outline" onClick={handleSkip} disabled={disabled || isSubmitting}>
 					Skip This Comparison
 				</Button>
 				<Button

@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
-import { decodeFromPaco, validatePacoCode } from '../../lib/paco/encoding';
+import { useState } from 'react';
 import { PickrCard } from '../../components/cards/PickrCard';
+import { Button } from '../../components/ui/Button';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '../../components/ui/Card';
+import { Input } from '../../components/ui/Input';
+import { decodeFromPaco, validatePacoCode } from '../../lib/paco/encoding';
 import { formatDate } from '../../lib/utils';
 import type { PacoData, RankedCard } from '../../types';
 
@@ -40,7 +46,7 @@ export default function ComparePage() {
 		if (inputs.length > 2) {
 			const newInputs = inputs.filter((_, i) => i !== index);
 			setInputs(newInputs);
-			
+
 			// Clear corresponding error
 			const newErrors = errors.filter((_, i) => i !== index);
 			setErrors(newErrors);
@@ -67,7 +73,7 @@ export default function ComparePage() {
 
 		for (let i = 0; i < inputs.length; i++) {
 			const code = inputs[i].trim();
-			
+
 			if (!code) {
 				newErrors[i] = '';
 				continue;
@@ -91,7 +97,7 @@ export default function ComparePage() {
 					color: COMPARISON_COLORS[i % COMPARISON_COLORS.length],
 				});
 				newErrors[i] = '';
-			} catch (error) {
+			} catch (_error) {
 				newErrors[i] = 'Error loading ranking data';
 			}
 		}
@@ -112,12 +118,15 @@ export default function ComparePage() {
 		if (comparisons.length === 0) return [];
 
 		// Get all unique items across all rankings
-		const allItems = new Map<string, { content: string; imageUrl?: string; totalScore: number; count: number; rankings: number[] }>();
+		const allItems = new Map<
+			string,
+			{ content: string; imageUrl?: string; totalScore: number; count: number; rankings: number[] }
+		>();
 
 		comparisons.forEach((comparison, compIndex) => {
-			comparison.rankings.forEach((rankedCard) => {
+			comparison.rankings.forEach(rankedCard => {
 				const key = rankedCard.content; // Use content as key for matching
-				
+
 				if (!allItems.has(key)) {
 					allItems.set(key, {
 						content: rankedCard.content,
@@ -130,7 +139,8 @@ export default function ComparePage() {
 
 				const item = allItems.get(key)!;
 				// Inverse ranking (higher rank = lower score)
-				const normalizedScore = (comparison.rankings.length - rankedCard.rank + 1) / comparison.rankings.length;
+				const normalizedScore =
+					(comparison.rankings.length - rankedCard.rank + 1) / comparison.rankings.length;
 				item.totalScore += normalizedScore;
 				item.count++;
 				item.rankings[compIndex] = rankedCard.rank;
@@ -138,17 +148,19 @@ export default function ComparePage() {
 		});
 
 		// Convert to ranked cards and sort by average score
-		const consensusItems: RankedCard[] = Array.from(allItems.entries()).map(([key, item], index) => ({
-			id: `consensus-${index}`,
-			content: item.content,
-			imageUrl: item.imageUrl,
-			rank: 0, // Will be set after sorting
-			score: item.totalScore / comparisons.length, // Average normalized score
-			wins: 0, // Not applicable for consensus
-			losses: 0, // Not applicable for consensus
-			ties: 0,
-			createdAt: new Date(),
-		}));
+		const consensusItems: RankedCard[] = Array.from(allItems.entries()).map(
+			([_key, item], index) => ({
+				id: `consensus-${index}`,
+				content: item.content,
+				imageUrl: item.imageUrl,
+				rank: 0, // Will be set after sorting
+				score: item.totalScore / comparisons.length, // Average normalized score
+				wins: 0, // Not applicable for consensus
+				losses: 0, // Not applicable for consensus
+				ties: 0,
+				createdAt: new Date(),
+			})
+		);
 
 		// Sort by score (descending) and assign ranks
 		consensusItems.sort((a, b) => b.score - a.score);
@@ -173,7 +185,8 @@ export default function ComparePage() {
 					>
 						<h1 className="text-4xl font-bold mb-4">Compare Rankings</h1>
 						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-							Compare multiple ranking results side by side to find consensus or identify differences
+							Compare multiple ranking results side by side to find consensus or identify
+							differences
 						</p>
 					</motion.div>
 				</header>
@@ -197,7 +210,7 @@ export default function ComparePage() {
 								<div key={index} className="flex gap-2">
 									<Input
 										value={input}
-										onChange={(e) => updateInput(index, e.target.value)}
+										onChange={e => updateInput(index, e.target.value)}
 										placeholder={`Sharing code ${index + 1} (e.g., p_ABC123...)`}
 										className={`font-mono flex-1 ${errors[index] ? 'border-destructive' : ''}`}
 									/>
@@ -208,8 +221,18 @@ export default function ComparePage() {
 											size="icon"
 											onClick={() => removeInput(index)}
 										>
-											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+											<svg
+												className="w-4 h-4"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M6 18L18 6M6 6l12 12"
+												/>
 											</svg>
 										</Button>
 									)}
@@ -219,11 +242,14 @@ export default function ComparePage() {
 							{/* Error messages */}
 							{errors.some(Boolean) && (
 								<div className="space-y-1">
-									{errors.map((error, index) => error && (
-										<p key={index} className="text-sm text-destructive">
-											Ranking {index + 1}: {error}
-										</p>
-									))}
+									{errors.map(
+										(error, index) =>
+											error && (
+												<p key={index} className="text-sm text-destructive">
+													Ranking {index + 1}: {error}
+												</p>
+											)
+									)}
 								</div>
 							)}
 
@@ -267,7 +293,7 @@ export default function ComparePage() {
 									</CardHeader>
 									<CardContent>
 										<div className="space-y-3">
-											{consensus.slice(0, 10).map((item, index) => (
+											{consensus.slice(0, 10).map((item, _index) => (
 												<div
 													key={item.id}
 													className="flex items-center gap-4 p-3 rounded-lg bg-muted/30"
@@ -309,21 +335,22 @@ export default function ComparePage() {
 								<Card key={index}>
 									<CardHeader>
 										<div className="flex items-center gap-3">
-											<div 
-												className="w-4 h-4 rounded-full" 
+											<div
+												className="w-4 h-4 rounded-full"
 												style={{ backgroundColor: comparison.color }}
 											/>
 											<div className="flex-1">
 												<CardTitle className="text-lg">{comparison.label}</CardTitle>
 												<CardDescription>
-													{formatDate(comparison.metadata.timestamp)} • {comparison.metadata.algorithm}
+													{formatDate(comparison.metadata.timestamp)} •{' '}
+													{comparison.metadata.algorithm}
 												</CardDescription>
 											</div>
 										</div>
 									</CardHeader>
 									<CardContent>
 										<div className="space-y-2 max-h-96 overflow-y-auto">
-											{comparison.rankings.slice(0, 10).map((rankedCard) => (
+											{comparison.rankings.slice(0, 10).map(rankedCard => (
 												<div
 													key={rankedCard.id}
 													className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50"
@@ -332,9 +359,7 @@ export default function ComparePage() {
 														{rankedCard.rank}
 													</div>
 													<div className="flex-1 min-w-0">
-														<p className="text-sm font-medium truncate">
-															{rankedCard.content}
-														</p>
+														<p className="text-sm font-medium truncate">{rankedCard.content}</p>
 													</div>
 													<div className="text-xs text-muted-foreground">
 														{Math.round(rankedCard.score * 100)}%
@@ -364,7 +389,12 @@ export default function ComparePage() {
 					>
 						<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
 							<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+								/>
 							</svg>
 						</div>
 						<p className="text-lg font-medium mb-2">No Comparisons Yet</p>
