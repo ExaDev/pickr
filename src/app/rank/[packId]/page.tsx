@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCardsStore, useRankingStore } from '../../../store';
-import { ComparisonView } from '../../../components/ranking/ComparisonView';
+import { SwipeComparisonView } from '../../../components/ranking/SwipeComparisonView';
 import { RankingSidebar } from '../../../components/ranking/RankingSidebar';
 import { Button } from '../../../components/ui/Button';
-import { generateNextComparison, calculateProgress, isRankingComplete, calculateFinalRankings, getDefaultRankingSettings } from '../../../lib/ranking/utils';
+import { generateNextComparison as getNextComparison, calculateProgress, isRankingComplete, calculateFinalRankings, getDefaultRankingSettings } from '../../../lib/ranking/utils';
 import type { Card, Comparison } from '../../../types';
 
 interface RankingPageProps {
@@ -48,7 +48,7 @@ export default function RankingPage({ params }: RankingPageProps) {
 	const generateNextComparison = () => {
 		if (!pack || !currentSession) return;
 
-		const nextCards = generateNextComparison(
+		const nextCards = getNextComparison(
 			pack.cards,
 			currentSession.comparisons,
 			currentSession.settings
@@ -205,7 +205,7 @@ export default function RankingPage({ params }: RankingPageProps) {
 							</div>
 						</div>
 					) : currentComparison ? (
-						<ComparisonView
+						<SwipeComparisonView
 							comparison={currentComparison}
 							onSelect={handleComparisonSelect}
 							showProgress={true}
