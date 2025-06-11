@@ -18,7 +18,7 @@ export function useFocusManagement() {
 		const focusable = element.querySelector(
 			'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
 		) as HTMLElement;
-		
+
 		if (focusable) {
 			focusable.focus();
 			return true;
@@ -30,7 +30,7 @@ export function useFocusManagement() {
 		const focusableElements = container.querySelectorAll(
 			'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
 		);
-		
+
 		const firstFocusable = focusableElements[0] as HTMLElement;
 		const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
 
@@ -60,12 +60,12 @@ export function useFocusManagement() {
 		saveFocus,
 		restoreFocus,
 		focusFirst,
-		trapFocus
+		trapFocus,
 	};
 }
 
 // Hook for auto-focusing elements
-export function useAutoFocus(shouldFocus: boolean = true, delay: number = 0) {
+export function useAutoFocus(shouldFocus = true, delay = 0) {
 	const elementRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -82,7 +82,7 @@ export function useAutoFocus(shouldFocus: boolean = true, delay: number = 0) {
 }
 
 // Hook for focus trapping in modals/dialogs
-export function useFocusTrap(isActive: boolean = true) {
+export function useFocusTrap(isActive = true) {
 	const containerRef = useRef<HTMLElement>(null);
 	const { saveFocus, restoreFocus, trapFocus } = useFocusManagement();
 
@@ -90,12 +90,12 @@ export function useFocusTrap(isActive: boolean = true) {
 		if (isActive && containerRef.current) {
 			saveFocus();
 			const cleanup = trapFocus(containerRef.current);
-			
+
 			// Focus first element in container
 			const firstFocusable = containerRef.current.querySelector(
 				'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
 			) as HTMLElement;
-			
+
 			if (firstFocusable) {
 				firstFocusable.focus();
 			}

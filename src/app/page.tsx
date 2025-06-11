@@ -31,17 +31,17 @@ export default function Home() {
 		{
 			key: 'c',
 			handler: handleCreatePack,
-			description: 'Create new pack (C)'
+			description: 'Create new pack (C)',
 		},
 		{
 			key: 'n',
 			handler: handleCreatePack,
-			description: 'Create new pack (N)'
-		}
+			description: 'Create new pack (N)',
+		},
 	]);
 
 	return (
-		<main className="min-h-screen bg-background">
+		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
 				{/* Header */}
 				<header className="text-center mb-12">
@@ -173,6 +173,6 @@ export default function Home() {
 					/>
 				</section>
 			</div>
-		</main>
+		</div>
 	);
 }

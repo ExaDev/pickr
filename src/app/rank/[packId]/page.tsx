@@ -49,7 +49,7 @@ export default function RankingPage({ params }: RankingPageProps) {
 			// Generate first comparison
 			generateNextComparison();
 		}
-	}, [pack, resolvedParams.packId]);
+	}, [pack, resolvedParams.packId, currentSession, router, startSession]);
 
 	// Generate next comparison
 	const generateNextComparison = () => {
@@ -92,7 +92,8 @@ export default function RankingPage({ params }: RankingPageProps) {
 
 		// Check if complete
 		if (
-			pack && isRankingComplete(
+			pack &&
+			isRankingComplete(
 				pack.cards,
 				[...currentSession.comparisons, completedComparison],
 				currentSession.settings

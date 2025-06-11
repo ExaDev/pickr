@@ -74,24 +74,28 @@ export default function CreatePackPage() {
 				}
 			},
 			description: 'Create pack (Ctrl+Enter)',
-			disabled: !canCreate || isCreating
+			disabled: !canCreate || isCreating,
 		},
 		{
 			key: 'Escape',
 			handler: () => {
 				router.back();
 			},
-			description: 'Go back (Escape)'
-		}
+			description: 'Go back (Escape)',
+		},
 	]);
 
 	return (
-		<main className="min-h-screen bg-background">
+		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8 max-w-4xl">
 				{/* Header */}
 				<header className="mb-8">
 					<div className="flex items-center gap-4 mb-4">
-						<Button variant="ghost" onClick={() => router.back()} aria-label="Go back to previous page">
+						<Button
+							variant="ghost"
+							onClick={() => router.back()}
+							aria-label="Go back to previous page"
+						>
 							← Back
 						</Button>
 						<div>
@@ -263,6 +267,6 @@ export default function CreatePackPage() {
 					</div>
 				</div>
 			</div>
-		</main>
+		</div>
 	);
 }

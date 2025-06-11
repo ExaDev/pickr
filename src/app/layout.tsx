@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { SkipLinks } from '../components/accessibility/SkipLinks';
 import Footer from '../components/Footer';
 import MSWProvider from '../components/MSWProvider';
+import { SkipLinks } from '../components/accessibility/SkipLinks';
 import './globals.css';
 
 export const metadata: Metadata = {

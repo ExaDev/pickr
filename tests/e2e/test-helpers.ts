@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { type Page, expect } from '@playwright/test';
 
 /**
  * Test helper functions for pickr E2E tests
@@ -12,26 +12,26 @@ export class PickrTestHelpers {
 	 */
 	async createPack(packName: string, items: string[], description?: string) {
 		await this.page.goto('/create');
-		
+
 		// Fill pack details
 		await this.page.getByLabel('Pack Name').fill(packName);
 		if (description) {
 			await this.page.getByLabel('Description').fill(description);
 		}
-		
+
 		// Add items
 		for (const item of items) {
 			await this.page.getByPlaceholder('Enter item to rank...').fill(item);
 			await this.page.getByRole('button', { name: 'Add Card' }).click();
 		}
-		
+
 		// Verify items were added
 		await expect(this.page.getByText(`Preview (${items.length} items)`)).toBeVisible();
-		
+
 		return {
 			packName,
 			itemCount: items.length,
-			canStart: items.length >= 2
+			canStart: items.length >= 2,
 		};
 	}
 
@@ -42,14 +42,14 @@ export class PickrTestHelpers {
 		const startButton = this.page.getByRole('button', { name: 'Start Ranking' });
 		await expect(startButton).toBeEnabled();
 		await startButton.click();
-		
+
 		// Wait for ranking interface to load
 		await expect(this.page.getByText('Which do you prefer?')).toBeVisible();
 		await expect(this.page.url()).toContain('/rank/');
-		
+
 		return {
 			url: this.page.url(),
-			packId: this.page.url().split('/rank/')[1]
+			packId: this.page.url().split('/rank/')[1],
 		};
 	}
 
@@ -58,17 +58,17 @@ export class PickrTestHelpers {
 	 */
 	async completeComparison() {
 		await expect(this.page.getByText('Which do you prefer?')).toBeVisible();
-		
+
 		// Click first card
 		const firstCard = this.page.locator('.cursor-grab').first();
 		await expect(firstCard).toBeVisible();
 		await firstCard.click();
-		
+
 		// Wait for transition
 		await this.page.waitForTimeout(1000);
-		
+
 		return {
-			completed: true
+			completed: true,
 		};
 	}
 
@@ -77,14 +77,14 @@ export class PickrTestHelpers {
 	 */
 	async completeFullRanking(maxComparisons = 10) {
 		let comparisonsCompleted = 0;
-		
+
 		while (comparisonsCompleted < maxComparisons) {
 			// Check if ranking is complete
 			const completionMessage = this.page.getByText('Ranking Complete!');
 			if (await completionMessage.isVisible()) {
 				break;
 			}
-			
+
 			// Check if comparison interface is still available
 			const comparisonText = this.page.getByText('Which do you prefer?');
 			if (await comparisonText.isVisible()) {
@@ -94,13 +94,13 @@ export class PickrTestHelpers {
 				break;
 			}
 		}
-		
+
 		// Verify completion
 		await expect(this.page.getByText('Ranking Complete!')).toBeVisible({ timeout: 15000 });
-		
+
 		return {
 			comparisonsCompleted,
-			isComplete: true
+			isComplete: true,
 		};
 	}
 
@@ -110,13 +110,13 @@ export class PickrTestHelpers {
 	async goToResults() {
 		await expect(this.page.getByText('Ranking Complete!')).toBeVisible();
 		await this.page.getByRole('button', { name: /view full results/i }).click();
-		
+
 		await expect(this.page.url()).toContain('/results/');
 		await expect(this.page.getByText('Ranking Complete!')).toBeVisible();
-		
+
 		return {
 			url: this.page.url(),
-			sessionId: this.page.url().split('/results/')[1]
+			sessionId: this.page.url().split('/results/')[1],
 		};
 	}
 
@@ -126,15 +126,15 @@ export class PickrTestHelpers {
 	async getShareUrl() {
 		await this.page.getByRole('button', { name: /share results/i }).click();
 		await expect(this.page.getByText('Share Your Results')).toBeVisible();
-		
+
 		const urlInput = this.page.locator('input[readonly]');
 		await expect(urlInput).toBeVisible();
-		
+
 		const shareUrl = await urlInput.inputValue();
-		
+
 		// Close modal
 		await this.page.getByRole('button', { name: /close/i }).click();
-		
+
 		return shareUrl;
 	}
 
@@ -143,16 +143,16 @@ export class PickrTestHelpers {
 	 */
 	async loadSharedResult(pacoCode: string) {
 		await this.page.goto('/results/shared');
-		
+
 		await this.page.getByPlaceholder(/Enter sharing code/).fill(pacoCode);
 		await this.page.getByRole('button', { name: /view results/i }).click();
-		
+
 		// Wait for results to load
 		await this.page.waitForTimeout(2000);
-		
+
 		return {
 			loaded: true,
-			hasError: await this.page.getByText(/invalid sharing code/i).isVisible()
+			hasError: await this.page.getByText(/invalid sharing code/i).isVisible(),
 		};
 	}
 
@@ -160,10 +160,10 @@ export class PickrTestHelpers {
 	 * Check if element is in viewport
 	 */
 	async isInViewport(selector: string): Promise<boolean> {
-		return await this.page.evaluate((selector) => {
+		return await this.page.evaluate(selector => {
 			const element = document.querySelector(selector);
 			if (!element) return false;
-			
+
 			const rect = element.getBoundingClientRect();
 			return (
 				rect.top >= 0 &&
@@ -179,12 +179,10 @@ export class PickrTestHelpers {
 	 */
 	async waitForAnimations(timeout = 2000) {
 		await this.page.waitForTimeout(timeout);
-		
+
 		// Wait for any CSS transitions/animations to complete
 		await this.page.evaluate(() => {
-			return Promise.all(
-				document.getAnimations().map(animation => animation.finished)
-			);
+			return Promise.all(document.getAnimations().map(animation => animation.finished));
 		});
 	}
 
@@ -233,9 +231,9 @@ export class PickrTestHelpers {
 	 */
 	async takeTimestampedScreenshot(name: string) {
 		const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-		await this.page.screenshot({ 
+		await this.page.screenshot({
 			path: `screenshots/${name}-${timestamp}.png`,
-			fullPage: true 
+			fullPage: true,
 		});
 	}
 
@@ -244,17 +242,17 @@ export class PickrTestHelpers {
 	 */
 	async checkForErrors() {
 		const errors: string[] = [];
-		
-		this.page.on('pageerror', (error) => {
+
+		this.page.on('pageerror', error => {
 			errors.push(error.message);
 		});
-		
-		this.page.on('console', (msg) => {
+
+		this.page.on('console', msg => {
 			if (msg.type() === 'error') {
 				errors.push(msg.text());
 			}
 		});
-		
+
 		return errors;
 	}
 
@@ -262,7 +260,7 @@ export class PickrTestHelpers {
 	 * Simulate slow network conditions
 	 */
 	async simulateSlowNetwork() {
-		await this.page.route('**/*', async (route) => {
+		await this.page.route('**/*', async route => {
 			await new Promise(resolve => setTimeout(resolve, 100));
 			await route.continue();
 		});
@@ -273,12 +271,16 @@ export class PickrTestHelpers {
 	 */
 	async getPerformanceMetrics() {
 		return await this.page.evaluate(() => {
-			const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+			const navigation = performance.getEntriesByType(
+				'navigation'
+			)[0] as PerformanceNavigationTiming;
 			return {
 				loadTime: navigation.loadEventEnd - navigation.loadEventStart,
-				domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+				domContentLoaded:
+					navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
 				firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 0,
-				firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0,
+				firstContentfulPaint:
+					performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0,
 			};
 		});
 	}
@@ -304,17 +306,39 @@ export const TestData = {
 		small: ['Apple', 'Banana', 'Cherry'],
 		medium: ['Red', 'Blue', 'Green', 'Yellow', 'Orange'],
 		large: [
-			'Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5',
-			'Option 6', 'Option 7', 'Option 8', 'Option 9', 'Option 10'
+			'Option 1',
+			'Option 2',
+			'Option 3',
+			'Option 4',
+			'Option 5',
+			'Option 6',
+			'Option 7',
+			'Option 8',
+			'Option 9',
+			'Option 10',
 		],
 		movies: [
-			'The Matrix', 'Inception', 'Interstellar', 'The Dark Knight',
-			'Pulp Fiction', 'The Godfather', 'Star Wars', 'Avatar'
+			'The Matrix',
+			'Inception',
+			'Interstellar',
+			'The Dark Knight',
+			'Pulp Fiction',
+			'The Godfather',
+			'Star Wars',
+			'Avatar',
 		],
 		fruits: [
-			'Apple', 'Banana', 'Orange', 'Grape', 'Strawberry',
-			'Mango', 'Pineapple', 'Watermelon', 'Blueberry', 'Kiwi'
-		]
+			'Apple',
+			'Banana',
+			'Orange',
+			'Grape',
+			'Strawberry',
+			'Mango',
+			'Pineapple',
+			'Watermelon',
+			'Blueberry',
+			'Kiwi',
+		],
 	},
 
 	/**
@@ -322,7 +346,7 @@ export const TestData = {
 	 */
 	generateRandomItems: (count: number, prefix = 'Item') => {
 		return Array.from({ length: count }, (_, i) => `${prefix} ${i + 1}`);
-	}
+	},
 };
 
 /**
@@ -366,5 +390,5 @@ export const PickrAssertions = {
 		await expect(page.getByText('View Shared Results')).toBeVisible();
 		await expect(page.getByPlaceholder(/Enter sharing code/)).toBeVisible();
 		await expect(page.getByRole('button', { name: /view results/i })).toBeVisible();
-	}
+	},
 };

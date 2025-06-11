@@ -7,11 +7,11 @@ import { PickrCard } from '../../../components/cards/PickrCard';
 import { RankingChart } from '../../../components/results/RankingChart';
 import { Button } from '../../../components/ui/Button';
 import {
-	Card as UICard,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	Card as UICard,
 } from '../../../components/ui/Card';
 import { encodeToPaco, getShareableUrl } from '../../../lib/paco/encoding';
 import { calculateFinalRankings } from '../../../lib/ranking/utils';
