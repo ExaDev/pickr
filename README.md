@@ -1,94 +1,97 @@
-# {{PROJECT_NAME}} - Next.js Template
+# pickr
 
 ![Coverage](https://img.shields.io/badge/coverage-84.21%25-yellow.svg)
 
 ## Overview
 
-This is a production-ready Next.js template featuring a comprehensive development environment with modern tooling, testing infrastructure, and CI/CD pipeline. Perfect for building static-export applications with built-in LLM integration capabilities.
+pickr is a web application that enables users to create rankings of any set of items through intuitive swipe-based pairwise comparisons. Users can rank anything from personal preferences to team decisions by swiping through comparisons, similar to popular dating app interfaces. The app supports flexible comparison group sizes, real-time ranking visualisation, and shareable results through Paco encoding.
+
+**Perfect for:**
+- Personal decision making (favourite movies, restaurants, travel destinations)
+- Team collaboration (feature prioritisation, candidate ranking, design selection)
+- Entertainment & social activities (tier lists, polls, competitions)
 
 ## 🚀 Quick Start
 
-### 1. Use This Template
-Click "Use this template" button on GitHub or clone the repository:
+### 1. Clone and Install
 ```bash
-git clone {{REPOSITORY_URL}}
-cd {{PROJECT_NAME}}
+git clone https://github.com/your-username/pickr
+cd pickr
 ```
 
-### 2. Customize Your Project
-Run the setup script to replace template placeholders:
-```bash
-npm run setup
-```
-
-This will prompt you for:
-- Project name
-- Project description
-- Author information
-- Repository URL
-- App name and descriptions
-- Feature descriptions
-
-### 3. Install Dependencies
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-### 4. Start Development
+### 3. Start Development
 ```bash
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see your application.
 
-## 🎯 Features
+## 🎯 Key Features
 
-### ✅ Modern Development Stack
+### ✅ Intuitive Ranking System
+- **Swipe-based comparisons** - Familiar mobile-first interface
+- **Pairwise comparisons** - Break complex decisions into simple choices
+- **Flexible group sizes** - Compare 2-N items per round (configurable)
+- **Real-time progress** - Live ranking updates as you compare
+
+### ✅ Flexible Card Creation
+- **Text-only cards** - Simple text-based items to rank
+- **Image cards** - Visual comparisons with images
+- **Mixed content** - Combine text and images for rich comparisons
+- **Pack management** - Organise related items into collections
+
+### ✅ Results & Sharing
+- **Paco encoding** - Compact, shareable URLs for results
+- **Multi-result comparison** - Compare rankings from different users
+- **Aggregate analysis** - Identify consensus and differences
+- **Offline functionality** - Works without internet connection
+
+### ✅ Technical Excellence
 - **Next.js 15** with App Router and TypeScript
-- **React 19** with latest features
-- **Tailwind CSS v4** for styling
-- **Static Export** ready for deployment
-
-### ✅ Comprehensive Testing
-- **Vitest** for unit testing
-- **MSW** for API mocking
-- **React Testing Library** for component testing
-- **Coverage reporting** with thresholds
-
-### ✅ Code Quality Tools
-- **Biome** for linting and formatting
-- **TypeScript** strict mode
-- **Husky** git hooks
-- **Conventional commits** with Commitizen
-
-### ✅ CI/CD Pipeline
-- **GitHub Actions** workflow
-- **Semantic Release** for versioning
-- **Automated deployment** to GitHub Pages
-- **Security audits** and quality gates
-
-### ✅ LLM Integration Ready
-- **WebAssembly** support configured
-- **Multi-provider** architecture
-- **Privacy-first** approach with local processing
-- **Mock APIs** ready for integration
+- **React 19** with modern features
+- **Zustand** for local state management
+- **Static export** ready for CDN deployment
+- **Mobile-responsive** design with Tailwind CSS
+- **Comprehensive testing** with Vitest and MSW
 
 ## 📁 Project Structure
 
 ```
 ├── src/
 │   ├── app/                 # Next.js App Router
+│   │   ├── create/          # Pack creation pages
+│   │   ├── rank/            # Ranking session pages
+│   │   ├── results/         # Results display pages
+│   │   ├── compare/         # Multi-result comparison
 │   │   ├── layout.tsx       # Root layout
-│   │   ├── page.tsx         # Home page (customizable)
+│   │   ├── page.tsx         # Landing page
 │   │   └── globals.css      # Global styles
-│   ├── components/          # Reusable components
-│   ├── lib/                 # Utilities and API functions
-│   ├── mocks/               # MSW mock handlers
-│   ├── stories/             # Storybook stories
-│   └── types/               # TypeScript type definitions
-├── public/                  # Static assets
-├── .github/workflows/       # CI/CD configuration
-└── Configuration files      # Various config files
+│   ├── components/          # React components
+│   │   ├── cards/           # Card creation and display
+│   │   ├── ranking/         # Swipe interface components
+│   │   ├── results/         # Results visualisation
+│   │   └── ui/              # Common UI components
+│   ├── lib/                 # Core utilities
+│   │   ├── ranking/         # Ranking algorithms
+│   │   ├── paco/            # Paco encoding/decoding
+│   │   ├── storage/         # Local storage utilities
+│   │   └── utils.ts         # General utilities
+│   ├── store/               # Zustand stores
+│   │   ├── cards.ts         # Card and pack management
+│   │   ├── ranking.ts       # Ranking session state
+│   │   └── results.ts       # Results and comparison state
+│   ├── types/               # TypeScript definitions
+│   │   ├── cards.ts         # Card and pack types
+│   │   ├── ranking.ts       # Ranking system types
+│   │   └── results.ts       # Results and sharing types
+│   └── mocks/               # MSW mock handlers
+├── public/                  # Static assets and example images
+└── docs/                    # Implementation documentation
 ```
 
 ## 🛠️ Development Commands
@@ -125,49 +128,47 @@ npm run release:dry  # Preview release
 
 ## 🔧 Configuration
 
-### Template Placeholders
-The following placeholders will be replaced during setup:
-
-**Package.json:**
-- `{{PROJECT_NAME}}` - NPM package name
-- `{{PROJECT_DESCRIPTION}}` - Project description
-- `{{REPOSITORY_URL}}` - Git repository URL
-- `{{AUTHOR_NAME}}` - Author name
-- `{{AUTHOR_EMAIL}}` - Author email
-- `{{LICENSE}}` - License type
-
-**Application Content:**
-- `{{APP_NAME}}` - Application display name
-- `{{APP_DESCRIPTION}}` - Application description
-- `{{FEATURE_X_TITLE}}` - Feature titles (1-4)
-- `{{FEATURE_X_DESCRIPTION}}` - Feature descriptions (1-4)
-- `{{CTA_TITLE}}` - Call-to-action title
-- `{{CTA_DESCRIPTION}}` - Call-to-action description
-- `{{CTA_BUTTON_TEXT}}` - Button text
-
 ### Environment Variables
 Create a `.env.local` file for local development:
 ```env
-# Add your environment variables here
-NEXT_PUBLIC_APP_NAME="{{APP_NAME}}"
+# Application Configuration
+NEXT_PUBLIC_APP_NAME="pickr"
+NEXT_PUBLIC_MAX_PACK_SIZE=50
+NEXT_PUBLIC_DEFAULT_COMPARISON_SIZE=2
+
+# Storage Configuration
+NEXT_PUBLIC_STORAGE_PREFIX="pickr_"
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+
+# Development Settings
+NEXT_PUBLIC_DEBUG_MODE=false
 ```
+
+### Customisation Options
+- **Comparison group size**: Adjust default comparison size (2-N items)
+- **Pack size limits**: Set maximum number of items per pack
+- **Storage settings**: Configure local storage behaviour
+- **UI themes**: Customise colours and styling in `tailwind.config.ts`
 
 ## 🧪 Testing Strategy
 
-### Unit Testing
-- **Vitest** configuration with React Testing Library
-- **Coverage thresholds**: 80% statements/functions/lines, 70% branches
-- **Co-located tests**: Tests next to source files
+### Core Algorithm Testing
+- **Ranking algorithms** - Comprehensive tests for pairwise comparison logic
+- **Paco encoding/decoding** - URL generation and parsing validation
+- **State management** - Zustand store behaviour verification
+- **Edge cases** - Handling of ties, incomplete comparisons, and invalid data
 
-### API Mocking
-- **MSW** for realistic API mocking
-- **Handlers** for all endpoints
-- **Browser and Node** environments supported
+### Component Testing
+- **Card creation** - Text and image card functionality
+- **Swipe interface** - Touch and keyboard interaction testing
+- **Results display** - Ranking visualisation and export features
+- **Responsive design** - Mobile and desktop layout testing
 
 ### Integration Testing
-- **MSW Provider** for development
-- **Storybook** for component testing
-- **E2E ready** structure
+- **Complete user flows** - End-to-end ranking sessions
+- **Cross-browser compatibility** - Safari, Chrome, Firefox testing
+- **Offline functionality** - Local storage and network independence
+- **Performance testing** - Large pack handling and optimisation
 
 ## 🚀 Deployment
 
@@ -183,27 +184,33 @@ npm run build    # Generate static export
 npx serve out    # Test locally
 ```
 
-## 🎨 Customization Guide
+## 🎨 Usage Guide
 
-### 1. Update Branding
-- Replace colors in `tailwind.config.ts`
-- Update logo in `public/` directory
-- Modify `src/app/layout.tsx` for metadata
+### Creating Your First Ranking
 
-### 2. Add Features
-- Create components in `src/components/`
-- Add pages in `src/app/`
-- Update API layer in `src/lib/api.ts`
+1. **Create a Pack**
+   - Navigate to the create page
+   - Add a title and description for your ranking
+   - Add items (text, images, or both)
+   - Save your pack
 
-### 3. Configure LLM Integration
-- Update `next.config.ts` for providers
-- Implement actual API calls in `src/lib/api.ts`
-- Replace MSW mocks with real endpoints
+2. **Start Ranking**
+   - Select your pack from the home page
+   - Configure comparison settings (group size)
+   - Begin swiping through comparisons
+   - Watch the live ranking sidebar update
 
-### 4. Customize CI/CD
-- Modify `.github/workflows/ci.yml`
-- Update deployment targets
-- Configure secrets and variables
+3. **View and Share Results**
+   - Complete all comparisons to see final ranking
+   - Share results via the generated Paco URL
+   - Compare with other users' rankings
+
+### Advanced Features
+
+- **Custom comparison sizes**: Rank 3-5 items at once for faster sessions
+- **Mixed content cards**: Combine text descriptions with images
+- **Offline usage**: All functionality works without internet
+- **Result analysis**: Compare multiple ranking sessions side-by-side
 
 ## 📚 Documentation
 
@@ -259,11 +266,33 @@ If you encounter any issues or have questions:
 
 ## 🎯 Roadmap
 
-- [ ] Add more component examples
-- [ ] Implement additional LLM providers
-- [ ] Add E2E testing setup
-- [ ] Create deployment guides
-- [ ] Add internationalization support
+### Phase 1: MVP Core Features
+- [ ] Basic pack creation with text cards
+- [ ] Pairwise comparison engine
+- [ ] Simple results display
+- [ ] Local storage with Zustand
+- [ ] Static export deployment
+
+### Phase 2: Enhanced Experience
+- [ ] Image support for cards
+- [ ] Configurable group sizes (2-N comparisons)
+- [ ] Live ranking sidebar
+- [ ] Paco encoding for shareable URLs
+- [ ] Mobile-optimised swipe gestures
+
+### Phase 3: Collaboration & Analysis
+- [ ] Multi-result comparison tools
+- [ ] Aggregate ranking analysis
+- [ ] Pack templates and sharing
+- [ ] Performance optimisations for large packs
+- [ ] Advanced visualisation options
+
+### Future Considerations
+- [ ] Real-time collaborative ranking
+- [ ] Native mobile applications
+- [ ] AI-powered suggestion engine
+- [ ] Integration with external data sources
+- [ ] Advanced analytics dashboard
 
 ## 🙏 Acknowledgments
 
