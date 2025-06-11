@@ -40,3 +40,19 @@ next-env.d.ts
 CLAUDE.md
 *storybook.log
 storybook-static
+
+# Playwright test artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Debug and temporary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webm
+*.mp4
+debug-*.spec.ts
+*-debug.*
