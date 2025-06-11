@@ -1,0 +1,484 @@
+name: CI
+
+on:
+  push:
+    branches: [main, beta, alpha]
+  pull_request:
+    branches: [main]
+
+# Template CI: This workflow automatically detects if the project is an 
+# unconfigured template and applies default values for testing.
+# After running 'npm run setup', this CI will work with your configured values.
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
+jobs:
+  lint-and-format:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup template for CI (if needed)
+        run: |
+          # Check if this is an unconfigured template
+          if grep -q "{{PROJECT_NAME}}" package.json; then
+            echo "⚠️ Detected unconfigured template, applying CI defaults..."
+            
+            # Replace placeholders with CI-safe defaults
+            sed -i 's/{{PROJECT_NAME}}/nextjs-template-test/g' package.json
+            sed -i 's/{{PROJECT_DESCRIPTION}}/Next.js Template Test Build/g' package.json
+            sed -i 's/{{REPOSITORY_URL}}/https:\/\/github.com\/ExaDev\/NextJS-Template/g' package.json
+            sed -i 's/{{AUTHOR_NAME}}/ExaDev/g' package.json
+            sed -i 's/{{AUTHOR_EMAIL}}/dev@exadev.com/g' package.json
+            sed -i 's/{{LICENSE}}/MIT/g' package.json
+            
+            # Setup React component placeholders (note the spaces in templates)
+            sed -i 's/{{ APP_NAME }}/Next.js Template/g' src/app/page.tsx
+            sed -i 's/{{ APP_DESCRIPTION }}/A production-ready Next.js template/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_1_TITLE }}/Modern Development/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_1_DESCRIPTION }}/Built with the latest Next.js and React/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_2_TITLE }}/Type Safety/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_2_DESCRIPTION }}/Full TypeScript support/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_3_TITLE }}/Testing Ready/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_3_DESCRIPTION }}/Comprehensive testing setup/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_4_TITLE }}/CI\/CD Pipeline/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_4_DESCRIPTION }}/Automated testing and deployment/g' src/app/page.tsx
+            sed -i 's/{{ CTA_TITLE }}/Get Started/g' src/app/page.tsx
+            sed -i 's/{{ CTA_DESCRIPTION }}/Start building your next project/g' src/app/page.tsx
+            sed -i 's/{{ CTA_BUTTON_TEXT }}/Start Building/g' src/app/page.tsx
+            
+            # Format the code after template replacement to fix any long lines
+            npm run lint:fix || true
+            
+            echo "✓ Template configured for CI testing"
+          else
+            echo "✓ Project is already configured"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Biome check
+        run: npm run lint
+
+      - name: Check TypeScript
+        run: npm run type-check
+
+  test:
+    name: Test & Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup template for CI (if needed)
+        run: |
+          # Check if this is an unconfigured template
+          if grep -q "{{PROJECT_NAME}}" package.json; then
+            echo "⚠️ Detected unconfigured template, applying CI defaults..."
+            
+            # Replace placeholders with CI-safe defaults
+            sed -i 's/{{PROJECT_NAME}}/nextjs-template-test/g' package.json
+            sed -i 's/{{PROJECT_DESCRIPTION}}/Next.js Template Test Build/g' package.json
+            sed -i 's/{{REPOSITORY_URL}}/https:\/\/github.com\/ExaDev\/NextJS-Template/g' package.json
+            sed -i 's/{{AUTHOR_NAME}}/ExaDev/g' package.json
+            sed -i 's/{{AUTHOR_EMAIL}}/dev@exadev.com/g' package.json
+            sed -i 's/{{LICENSE}}/MIT/g' package.json
+            
+            # Setup React component placeholders (note the spaces in templates)
+            sed -i 's/{{ APP_NAME }}/Next.js Template/g' src/app/page.tsx
+            sed -i 's/{{ APP_DESCRIPTION }}/A production-ready Next.js template/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_1_TITLE }}/Modern Development/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_1_DESCRIPTION }}/Built with the latest Next.js and React/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_2_TITLE }}/Type Safety/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_2_DESCRIPTION }}/Full TypeScript support/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_3_TITLE }}/Testing Ready/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_3_DESCRIPTION }}/Comprehensive testing setup/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_4_TITLE }}/CI\/CD Pipeline/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_4_DESCRIPTION }}/Automated testing and deployment/g' src/app/page.tsx
+            sed -i 's/{{ CTA_TITLE }}/Get Started/g' src/app/page.tsx
+            sed -i 's/{{ CTA_DESCRIPTION }}/Start building your next project/g' src/app/page.tsx
+            sed -i 's/{{ CTA_BUTTON_TEXT }}/Start Building/g' src/app/page.tsx
+            
+            # Format the code after template replacement to fix any long lines
+            npm run lint:fix || true
+            
+            echo "✓ Template configured for CI testing"
+          else
+            echo "✓ Project is already configured"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run coverage
+
+      - name: Generate Coverage Summary
+        run: |
+          echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Parse coverage summary and create detailed report
+          if [ -f "coverage/coverage-summary.json" ]; then
+            cat coverage/coverage-summary.json | jq -r '
+              "### Overall Coverage:\n",
+              "| Metric | Coverage | Threshold | Status |",
+              "| --- | --- | --- | --- |",
+              "| **Statements** | " + (.total.statements.pct | tostring) + "% (" + (.total.statements.covered | tostring) + "/" + (.total.statements.total | tostring) + ") | 80% | " + (if .total.statements.pct >= 80 then "✅ Pass" else "❌ Fail" end) + " |",
+              "| **Branches** | " + (.total.branches.pct | tostring) + "% (" + (.total.branches.covered | tostring) + "/" + (.total.branches.total | tostring) + ") | 70% | " + (if .total.branches.pct >= 70 then "✅ Pass" else "❌ Fail" end) + " |",
+              "| **Functions** | " + (.total.functions.pct | tostring) + "% (" + (.total.functions.covered | tostring) + "/" + (.total.functions.total | tostring) + ") | 80% | " + (if .total.functions.pct >= 80 then "✅ Pass" else "❌ Fail" end) + " |",
+              "| **Lines** | " + (.total.lines.pct | tostring) + "% (" + (.total.lines.covered | tostring) + "/" + (.total.lines.total | tostring) + ") | 80% | " + (if .total.lines.pct >= 80 then "✅ Pass" else "❌ Fail" end) + " |"
+            ' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📈 [View detailed coverage report in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Coverage summary file not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload coverage to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Generate Coverage Report Summary
+        run: |
+          # Extract coverage percentage for reporting
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.statements.pct')
+          
+          echo "📊 Coverage Summary: ${COVERAGE}%"
+          echo "coverage-percentage=${COVERAGE}" >> $GITHUB_OUTPUT
+
+
+      - name: Validate Coverage Thresholds
+        run: |
+          echo "Checking coverage thresholds against Vitest configuration..."
+          
+          # Check if coverage summary exists
+          if [ ! -f "coverage/coverage-summary.json" ]; then
+            echo "❌ Coverage summary not found"
+            exit 1
+          fi
+          
+          # Parse coverage and check thresholds using jq
+          STATEMENTS=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
+          BRANCHES=$(cat coverage/coverage-summary.json | jq '.total.branches.pct')
+          FUNCTIONS=$(cat coverage/coverage-summary.json | jq '.total.functions.pct')
+          LINES=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          
+          echo "Current coverage:"
+          echo "  Statements: ${STATEMENTS}% (threshold: 80%)"
+          echo "  Branches: ${BRANCHES}% (threshold: 70%)"
+          echo "  Functions: ${FUNCTIONS}% (threshold: 80%)"
+          echo "  Lines: ${LINES}% (threshold: 80%)"
+          
+          FAILED=false
+          
+          if (( $(echo "$STATEMENTS < 80" | bc -l) )); then
+            echo "❌ Statements coverage below threshold: ${STATEMENTS}% < 80%"
+            FAILED=true
+          fi
+          
+          if (( $(echo "$BRANCHES < 70" | bc -l) )); then
+            echo "❌ Branches coverage below threshold: ${BRANCHES}% < 70%"
+            FAILED=true
+          fi
+          
+          if (( $(echo "$FUNCTIONS < 80" | bc -l) )); then
+            echo "❌ Functions coverage below threshold: ${FUNCTIONS}% < 80%"
+            FAILED=true
+          fi
+          
+          if (( $(echo "$LINES < 80" | bc -l) )); then
+            echo "❌ Lines coverage below threshold: ${LINES}% < 80%"
+            FAILED=true
+          fi
+          
+          if [ "$FAILED" = true ]; then
+            echo "❌ Coverage thresholds not met"
+            exit 1
+          else
+            echo "✅ All coverage thresholds met"
+          fi
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup template for CI (if needed)
+        run: |
+          # Check if this is an unconfigured template
+          if grep -q "{{PROJECT_NAME}}" package.json; then
+            echo "⚠️ Detected unconfigured template, applying CI defaults..."
+            
+            # Replace placeholders with CI-safe defaults
+            sed -i 's/{{PROJECT_NAME}}/nextjs-template-test/g' package.json
+            sed -i 's/{{PROJECT_DESCRIPTION}}/Next.js Template Test Build/g' package.json
+            sed -i 's/{{REPOSITORY_URL}}/https:\/\/github.com\/ExaDev\/NextJS-Template/g' package.json
+            sed -i 's/{{AUTHOR_NAME}}/ExaDev/g' package.json
+            sed -i 's/{{AUTHOR_EMAIL}}/dev@exadev.com/g' package.json
+            sed -i 's/{{LICENSE}}/MIT/g' package.json
+            
+            # Format the code after template replacement to fix any long lines
+            npm run lint:fix || true
+            
+            echo "✓ Template configured for CI testing"
+          else
+            echo "✓ Project is already configured"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Run npm audit for production dependencies only
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Check for known security issues
+        run: |
+          echo "Checking for high/critical vulnerabilities in production dependencies..."
+          if npm audit --omit=dev --audit-level=high; then
+            echo "✓ No high/critical vulnerabilities found in production dependencies"
+          else
+            echo "✗ High/critical vulnerabilities found in production dependencies"
+            exit 1
+          fi
+
+  build:
+    name: Build & Deploy Test
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, test, security-audit]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup template for CI (if needed)
+        run: |
+          # Check if this is an unconfigured template
+          if grep -q "{{PROJECT_NAME}}" package.json; then
+            echo "⚠️ Detected unconfigured template, applying CI defaults..."
+            
+            # Replace placeholders with CI-safe defaults
+            sed -i 's/{{PROJECT_NAME}}/nextjs-template-test/g' package.json
+            sed -i 's/{{PROJECT_DESCRIPTION}}/Next.js Template Test Build/g' package.json
+            sed -i 's/{{REPOSITORY_URL}}/https:\/\/github.com\/ExaDev\/NextJS-Template/g' package.json
+            sed -i 's/{{AUTHOR_NAME}}/ExaDev/g' package.json
+            sed -i 's/{{AUTHOR_EMAIL}}/dev@exadev.com/g' package.json
+            sed -i 's/{{LICENSE}}/MIT/g' package.json
+            
+            # Setup React component placeholders (note the spaces in templates)
+            sed -i 's/{{ APP_NAME }}/Next.js Template/g' src/app/page.tsx
+            sed -i 's/{{ APP_DESCRIPTION }}/A production-ready Next.js template/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_1_TITLE }}/Modern Development/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_1_DESCRIPTION }}/Built with the latest Next.js and React/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_2_TITLE }}/Type Safety/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_2_DESCRIPTION }}/Full TypeScript support/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_3_TITLE }}/Testing Ready/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_3_DESCRIPTION }}/Comprehensive testing setup/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_4_TITLE }}/CI\/CD Pipeline/g' src/app/page.tsx
+            sed -i 's/{{ FEATURE_4_DESCRIPTION }}/Automated testing and deployment/g' src/app/page.tsx
+            sed -i 's/{{ CTA_TITLE }}/Get Started/g' src/app/page.tsx
+            sed -i 's/{{ CTA_DESCRIPTION }}/Start building your next project/g' src/app/page.tsx
+            sed -i 's/{{ CTA_BUTTON_TEXT }}/Start Building/g' src/app/page.tsx
+            
+            # Format the code after template replacement to fix any long lines
+            npm run lint:fix || true
+            
+            echo "✓ Template configured for CI testing"
+          else
+            echo "✓ Project is already configured"
+          fi
+
+      - name: Build application
+        env:
+          NEXT_PUBLIC_COMMIT_HASH: ${{ github.sha }}
+          NEXT_PUBLIC_BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+          NEXT_PUBLIC_BRANCH: ${{ github.ref_name }}
+        run: |
+          # Get version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+          
+          # Add branch suffix for non-main branches
+          if [ "${{ github.ref_name }}" != "main" ]; then
+            export NEXT_PUBLIC_APP_VERSION="${VERSION}-${{ github.ref_name }}"
+          else
+            export NEXT_PUBLIC_APP_VERSION="${VERSION}"
+          fi
+          
+          echo "Building with version info:"
+          echo "  Version: $NEXT_PUBLIC_APP_VERSION"
+          echo "  Commit: $NEXT_PUBLIC_COMMIT_HASH"
+          echo "  Build Time: $NEXT_PUBLIC_BUILD_TIME"
+          echo "  Branch: $NEXT_PUBLIC_BRANCH"
+          
+          npm run build
+
+      - name: Build Storybook
+        run: |
+          echo "Building Storybook for documentation..."
+          npm run build-storybook
+          
+          if [ -d "storybook-static" ]; then
+            echo "✓ Storybook build successful - 'storybook-static' directory created"
+            ls -la storybook-static/
+          else
+            echo "✗ Storybook build failed - 'storybook-static' directory not found"
+            exit 1
+          fi
+
+      - name: Test static export
+        run: |
+          if [ -d "out" ]; then
+            echo "✓ Static export successful - 'out' directory created"
+            ls -la out/
+          else
+            echo "✗ Static export failed - 'out' directory not found"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: out/
+          retention-days: 7
+
+      - name: Upload Storybook artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-output
+          path: storybook-static/
+          retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, test, security-audit, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: ./out
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, test, security-audit, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    # Grant specific permissions required for semantic-release
+    permissions:
+      contents: write      # to be able to publish a GitHub release
+      issues: write        # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write      # to enable use of OIDC for npm provenance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if template is configured
+        id: check-configured
+        run: |
+          if grep -q "{{PROJECT_NAME}}" package.json; then
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Skipping release for unconfigured template"
+          else
+            echo "configured=true" >> $GITHUB_OUTPUT
+            echo "✓ Template is configured, proceeding with release"
+          fi
+
+      - name: Setup Node.js
+        if: steps.check-configured.outputs.configured == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.check-configured.outputs.configured == 'true'
+        run: npm ci
+
+      - name: Release
+        if: steps.check-configured.outputs.configured == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
+

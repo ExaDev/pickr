@@ -1,0 +1,68 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "@maintainer"
+    assignees:
+      - "@maintainer"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    groups:
+      # Group React ecosystem updates
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@types/react*"
+          - "next"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "*vitest*"
+          - "@testing-library/*"
+          - "jsdom"
+      # Group linting/formatting tools
+      code-quality:
+        patterns:
+          - "@biomejs/*"
+          - "eslint*"
+          - "prettier*"
+      # Group build tools
+      build-tools:
+        patterns:
+          - "vite*"
+          - "webpack*"
+          - "postcss*"
+          - "autoprefixer"
+          - "tailwindcss"
+      # Group semantic release tools
+      release-tools:
+        patterns:
+          - "semantic-release*"
+          - "@semantic-release/*"
+          - "conventional-*"
+          - "commitizen"
+          - "husky"
+          - "lint-staged"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+      include: "scope"
