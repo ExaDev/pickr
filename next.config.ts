@@ -3,6 +3,10 @@ const nextConfig = {
 	// Enable static export for client-side only build
 	output: 'export',
 
+	// GitHub Pages deployment configuration
+	basePath: '/pickr',
+	assetPrefix: '/pickr/',
+
 	// Static export optimizations
 	trailingSlash: true,
 	skipTrailingSlashRedirect: true,
