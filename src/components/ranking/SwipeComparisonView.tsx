@@ -6,6 +6,8 @@ import type { Card, Comparison } from '../../types';
 import { Button } from '../ui/Button';
 import { SwipeableCard } from './SwipeableCard';
 
+type ComparisonMode = 'pick' | 'discard';
+
 interface SwipeComparisonViewProps {
 	comparison: Comparison;
 	onSelect: (winner: Card) => void;
@@ -28,6 +30,7 @@ export function SwipeComparisonView({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showInstructions, setShowInstructions] = useState(true);
 	const [focusedCardIndex, setFocusedCardIndex] = useState<number>(0);
+	const [mode, setMode] = useState<ComparisonMode>('pick');
 
 	// Hide instructions after first interaction
 	useEffect(() => {
@@ -38,6 +41,23 @@ export function SwipeComparisonView({
 		return () => clearTimeout(timer);
 	}, []);
 
+	// Helper function to execute the current mode action
+	const executeAction = (card: Card) => {
+		if (mode === 'pick') {
+			handleSelection(card);
+		} else {
+			// In discard mode, select the other card(s)
+			const otherCards = comparison.cards.filter(c => c.id !== card.id);
+			if (otherCards.length === 1) {
+				handleSelection(otherCards[0]);
+			} else if (otherCards.length > 1) {
+				// For multi-card comparisons in discard mode, we'd need more complex logic
+				// For now, just pick the first non-discarded card
+				handleSelection(otherCards[0]);
+			}
+		}
+	};
+
 	// Keyboard navigation
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -46,37 +66,68 @@ export function SwipeComparisonView({
 			switch (event.key) {
 				case 'ArrowLeft':
 					event.preventDefault();
-					setFocusedCardIndex(0);
-					setSelectedCard(comparison.cards[0]);
+					if (comparison.cards.length === 2) {
+						// With 2 cards: left arrow performs current action on left card
+						executeAction(comparison.cards[0]);
+					} else {
+						// With more cards: left arrow navigates to previous card
+						setFocusedCardIndex(
+							prev => (prev - 1 + comparison.cards.length) % comparison.cards.length
+						);
+					}
 					break;
 				case 'ArrowRight':
 					event.preventDefault();
-					setFocusedCardIndex(1);
-					setSelectedCard(comparison.cards[1]);
+					if (comparison.cards.length === 2) {
+						// With 2 cards: right arrow performs current action on right card
+						executeAction(comparison.cards[1]);
+					} else {
+						// With more cards: right arrow navigates to next card
+						setFocusedCardIndex(prev => (prev + 1) % comparison.cards.length);
+					}
+					break;
+				case ' ':
+					event.preventDefault();
+					if (comparison.cards.length > 2) {
+						// With more cards: space performs action on focused card
+						executeAction(comparison.cards[focusedCardIndex]);
+					} else {
+						// With 2 cards: space cancels selection
+						setSelectedCard(null);
+					}
 					break;
 				case 'Enter':
 					event.preventDefault();
 					if (selectedCard) {
 						handleSelection(selectedCard);
 					} else if (comparison.cards[focusedCardIndex]) {
-						handleSelection(comparison.cards[focusedCardIndex]);
+						executeAction(comparison.cards[focusedCardIndex]);
 					}
 					break;
-				case ' ':
 				case 'Escape':
 					event.preventDefault();
 					setSelectedCard(null);
 					break;
+				case 'p':
+				case 'P':
+					event.preventDefault();
+					setMode('pick');
+					break;
+				case 'd':
+				case 'D':
+					event.preventDefault();
+					setMode('discard');
+					break;
 				case '1':
 					event.preventDefault();
 					if (comparison.cards[0]) {
-						handleSelection(comparison.cards[0]);
+						executeAction(comparison.cards[0]);
 					}
 					break;
 				case '2':
 					event.preventDefault();
 					if (comparison.cards[1]) {
-						handleSelection(comparison.cards[1]);
+						executeAction(comparison.cards[1]);
 					}
 					break;
 			}
@@ -84,7 +135,7 @@ export function SwipeComparisonView({
 
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [disabled, isSubmitting, selectedCard, focusedCardIndex, comparison.cards]);
+	}, [disabled, isSubmitting, selectedCard, focusedCardIndex, comparison.cards, mode]);
 
 	const handleCardSwipeRight = (card: Card) => {
 		if (disabled || isSubmitting) return;
@@ -152,6 +203,36 @@ export function SwipeComparisonView({
 				</div>
 			)}
 
+			{/* Mode toggle */}
+			<div className="flex items-center justify-center">
+				<div className="bg-muted p-1 rounded-lg flex gap-1">
+					<button
+						type="button"
+						onClick={() => setMode('pick')}
+						className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+							mode === 'pick'
+								? 'bg-primary text-primary-foreground shadow-sm'
+								: 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+						}`}
+						aria-pressed={mode === 'pick'}
+					>
+						Pick Mode
+					</button>
+					<button
+						type="button"
+						onClick={() => setMode('discard')}
+						className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+							mode === 'discard'
+								? 'bg-primary text-primary-foreground shadow-sm'
+								: 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+						}`}
+						aria-pressed={mode === 'discard'}
+					>
+						Discard Mode
+					</button>
+				</div>
+			</div>
+
 			{/* Instructions */}
 			<AnimatePresence>
 				{showInstructions && (
@@ -162,9 +243,37 @@ export function SwipeComparisonView({
 						exit={{ opacity: 0, y: -20 }}
 						transition={{ duration: 0.3 }}
 					>
-						<h2 className="text-2xl font-semibold">Which do you prefer?</h2>
+						<h2 className="text-2xl font-semibold">
+							{mode === 'pick' ? 'Which do you prefer?' : 'Which do you want to discard?'}
+						</h2>
 						<p className="text-muted-foreground">
-							Swipe right to choose, swipe left to prefer the other, or tap to select manually
+							{comparison.cards.length === 2 ? (
+								mode === 'pick' ? (
+									<>
+										Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
+										<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to pick, or tap to
+										select manually
+									</>
+								) : (
+									<>
+										Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
+										<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to discard, or tap
+										to select manually
+									</>
+								)
+							) : mode === 'pick' ? (
+								<>
+									Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
+									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to navigate,{' '}
+									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> to pick
+								</>
+							) : (
+								<>
+									Use <kbd className="px-1 py-0.5 bg-muted rounded text-xs">←</kbd>{' '}
+									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to navigate,{' '}
+									<kbd className="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> to discard
+								</>
+							)}
 						</p>
 					</motion.div>
 				)}
@@ -184,6 +293,7 @@ export function SwipeComparisonView({
 							type: 'spring',
 							stiffness: 100,
 						}}
+						className="relative"
 					>
 						<button
 							type="button"
@@ -192,7 +302,9 @@ export function SwipeComparisonView({
 							onClick={() => handleCardTap(card)}
 							onFocus={() => setFocusedCardIndex(index)}
 							className={`w-full p-0 border-0 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg ${
-								focusedCardIndex === index ? 'ring-2 ring-primary/50' : ''
+								focusedCardIndex === index && comparison.cards.length > 2
+									? 'ring-2 ring-primary/70'
+									: ''
 							}`}
 						>
 							<SwipeableCard
@@ -206,6 +318,19 @@ export function SwipeComparisonView({
 								} ${focusedCardIndex === index ? 'shadow-lg' : ''}`}
 							/>
 						</button>
+
+						{/* Focus indicator for multi-card comparisons */}
+						{comparison.cards.length > 2 && focusedCardIndex === index && (
+							<motion.div
+								className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-medium shadow-lg"
+								initial={{ scale: 0, opacity: 0 }}
+								animate={{ scale: 1, opacity: 1 }}
+								exit={{ scale: 0, opacity: 0 }}
+								transition={{ duration: 0.2 }}
+							>
+								Press Space to {mode}
+							</motion.div>
+						)}
 					</motion.div>
 				))}
 			</fieldset>
@@ -275,8 +400,15 @@ export function SwipeComparisonView({
 				transition={{ delay: 1 }}
 				aria-label="Keyboard shortcuts"
 			>
-				<div>Keyboard shortcuts: ← → arrows to select • Enter to confirm • Space/Esc to cancel</div>
-				<div>Quick select: 1 for left option • 2 for right option</div>
+				<div>
+					{comparison.cards.length === 2
+						? `${mode === 'pick' ? 'Pick' : 'Discard'} mode: ← → arrows to ${mode} • P/D to switch mode • Enter to confirm • Esc to cancel`
+						: `${mode === 'pick' ? 'Pick' : 'Discard'} mode: ← → to navigate • Space to ${mode} • P/D to switch mode • Enter to confirm`}
+				</div>
+				<div>
+					Quick select: 1 for left option • 2 for right option • P for pick mode • D for discard
+					mode
+				</div>
 			</motion.section>
 
 			{/* Loading overlay */}
