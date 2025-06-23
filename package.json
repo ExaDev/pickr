@@ -58,7 +58,7 @@
 		"@semantic-release/git": "^10.0.1",
 		"@storybook/addon-docs": "^9.0.6",
 		"@storybook/addon-onboarding": "^9.0.6",
-		"@storybook/nextjs": "^9.0.6",
+		"@storybook/nextjs": "^9.0.12",
 		"@testing-library/dom": "^10.4.0",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.3.0",
