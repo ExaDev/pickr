@@ -1,5 +1,7 @@
 # pickr
 
+[![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white)](https://github.com/ExaDev/pickr) [![CI](https://img.shields.io/github/actions/workflow/status/ExaDev/pickr/ci.yml?branch=main)](https://github.com/ExaDev/pickr/actions)
+
 ![Coverage](https://img.shields.io/badge/coverage-84.21%25-yellow.svg)
 
 ## Overview
